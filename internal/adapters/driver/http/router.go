@@ -1,23 +1,21 @@
 package http
 
 import (
-	"log/slog"
 	"net/http"
 
 	"1337b04rd/internal/core/ports/inbound"
 )
 
-type rest struct {
-	logger  *slog.Logger
-	handler inbound.HandlerInter
+type router struct {
+	inbound.HandlerInter
 }
 
-func NewRoute(logger *slog.Logger, hand inbound.HandlerInter) inbound.RouteInter {
-	return &rest{}
+func NewRoute(hand inbound.HandlerInter) inbound.RouteInter {
+	return &router{hand}
 }
 
-func (r *rest) Serve() error {
+func (r *router) NewServe() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", r.handler.Archive)
-	return http.ListenAndServe("", mux)
+	mux.HandleFunc("GET /", r.Archive)
+	return mux
 }

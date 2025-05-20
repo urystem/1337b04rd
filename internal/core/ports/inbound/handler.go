@@ -8,7 +8,3 @@ type HandlerInter interface {
 	Catalog(w http.ResponseWriter, r *http.Request)
 	Archive(w http.ResponseWriter, r *http.Request)
 }
-
-type RouteInter interface {
-	Serve() error
-}
