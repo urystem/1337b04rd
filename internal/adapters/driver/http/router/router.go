@@ -7,11 +7,12 @@ import (
 )
 
 type router struct {
+	inbound.MiddleWareInter
 	inbound.HandlerInter
 }
 
 func NewRoute(hand inbound.HandlerInter) inbound.RouteInter {
-	return &router{hand}
+	return &router{}
 }
 
 func (r *router) NewServe() http.Handler {

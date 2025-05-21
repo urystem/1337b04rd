@@ -52,7 +52,8 @@ func getCookieHandler(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, http.ErrNoCookie):
 			http.Error(w, "cookie not found", http.StatusBadRequest)
 		default:
-			log.Println(err)
+
+			
 			http.Error(w, "server error", http.StatusInternalServerError)
 		}
 		return
