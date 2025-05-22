@@ -32,6 +32,8 @@ func (sr *sessionRedis) CheckSession(ctx context.Context, session string) (bool,
 }
 
 func (sr *sessionRedis) SetSession(ctx context.Context, session string) error {
+	// dura, err := sr.TTL(ctx, "dd").Result()
+	// key, err := sr.RandomKey(ctx).Result()
 	return sr.Set(ctx, session, nil, sr.ttl).Err()
 }
 

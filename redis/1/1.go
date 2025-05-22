@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -13,9 +14,9 @@ func main() {
 
 	// Создание клиента Redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379", // адрес Redis
-		Password: "",               // пароль, если есть
-		DB:       0,                // номер БД (0 по умолчанию)
+		Addr:     "redis:" + os.Getenv("REDIS_PORT"), // имя сервиса + порт                 // адрес Redis
+		Password: os.Getenv("REDIS_PASS"),            // пароль, если есть
+		DB:       0,                                  // номер БД (0 по умолчанию)
 	})
 
 	// Пример: Установить значение с TTL
@@ -40,4 +41,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("TTL:", ttl)
+
+	err = rdb.Set(ctx, "mykeyd", []byte("fdsf"), 10*time.Second).Err()
+	// rdb.
 }
