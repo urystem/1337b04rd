@@ -3,12 +3,15 @@ package outbound
 type RickMortyInter interface {
 	GetCharactersCount() (uint64, error)
 	GetPageCount() (uint64, error)
-	GetCharactersOfPages(uint) ([]CharacterInter, error)
+	GetCharactersOfPages(uint) ([]CharacterInputInter, error)
 }
 
-type CharacterInter interface {
+type CharacterInputInter interface {
 	GetID() uint64
+	CharacterOutputInter
+}
+
+type CharacterOutputInter interface {
 	GetName() string
 	GetAvatar() string
 }
-

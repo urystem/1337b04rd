@@ -7,3 +7,7 @@ type SessionRedisInter interface {
 	SetSession(ctx context.Context, session string) error
 }
 
+type RickAndMortyRedisInter interface {
+	SetCharacter(ctx context.Context, character CharacterInputInter) error
+	GetAndDelRandomCharacter(ctx context.Context) (CharacterOutputInter, error)
+}

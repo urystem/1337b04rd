@@ -2,21 +2,17 @@ package main
 
 import (
 	"errors"
-	"log"
 	"net/http"
+
+	"1337b04rd/internal/adapters/driven/redis"
+	"1337b04rd/internal/config"
 )
 
 func main() {
-	// Start a web server with the two endpoints.
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", setCookieHandler)
-	// mux.HandleFunc("GET /", getCookieHandler)
-
-	log.Print("Listening...")
-	err := http.ListenAndServe(":7070", mux)
-	if err != nil {
-		log.Fatal(err)
-	}
+	conf := config.InitConfig()
+	
+	red := redis.InitRickRedis(conf.GetRedisConfig())
+	
 }
 
 func setCookieHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +49,6 @@ func getCookieHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "cookie not found", http.StatusBadRequest)
 		default:
 
-			
 			http.Error(w, "server error", http.StatusInternalServerError)
 		}
 		return

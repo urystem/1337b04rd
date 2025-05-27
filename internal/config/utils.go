@@ -1,28 +1,24 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
-
-	myerrors "1337b04rd/internal/core/domain/myErrors"
 )
 
-func mustGetEnvString(key string) (string, error) {
+func mustGetEnvString(key string) string {
 	str := os.Getenv(key)
-	if len(str) == 0 {
-		return "", fmt.Errorf("%w: env: %s - not found", myerrors.ErrConfNotFound, key)
+	if str == "" {
+		return ""
 	}
-	return str, nil
+	return str
 }
 
-func mustGetEnvInt(key string) (int, error) {
+func mustGetEnvInt(key string) int {
 	if str := os.Getenv(key); len(str) == 0 {
-		return 0, fmt.Errorf("%w: env: %s - not found", myerrors.ErrConfNotFound, key)
+		return 0
 	} else if n, err := strconv.Atoi(str); err != nil {
-		return 0, fmt.Errorf("%w: key: %s - invalid env, %w", myerrors.ErrConfInvalid, key, err)
+		return 0
 	} else {
-		return n, nil
+		return n
 	}
 }
-
