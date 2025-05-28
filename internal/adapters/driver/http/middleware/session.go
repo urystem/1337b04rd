@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"1337b04rd/internal/core/ports/inbound"
-	"1337b04rd/internal/core/ports/outbound"
+	"1337b04rd/internal/ports/inbound"
+	"1337b04rd/internal/ports/outbound"
 
 	"github.com/google/uuid"
 )

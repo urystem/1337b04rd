@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 
-	"1337b04rd/internal/core/ports/inbound"
+	"1337b04rd/internal/ports/inbound"
 )
 
 type router struct {

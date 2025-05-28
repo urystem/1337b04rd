@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"fmt"
 	"strconv"
 
-	myerrors "1337b04rd/internal/core/domain/myErrors"
-	"1337b04rd/internal/core/ports/inbound"
-	"1337b04rd/internal/core/ports/outbound"
+	"1337b04rd/internal/ports/inbound"
+	"1337b04rd/internal/ports/outbound"
+	myerrors "1337b04rd/pkg/myErrors"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -32,9 +33,9 @@ func (rickRW *rickWriterReader) GetAvatar() string {
 
 func InitRickRedis(red inbound.RedisConfig) outbound.RickAndMortyRedisInter {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     red.GetHostName() + red.GetAddr(), // имя сервиса + порт                 // адрес Redis
-		Password: red.GetPass(),                     // пароль, если есть
-		DB:       0,                                 // номер БД (0 по умолчанию)
+		Addr:     "redisDB:" + red.GetAddr(), // имя сервиса + порт                 // адрес Redis
+		Password: red.GetPass(),              // пароль, если есть
+		DB:       0,                          // номер БД (0 по умолчанию)
 	})
 	return &rickAndMorty{rdb}
 }
@@ -47,6 +48,7 @@ func (rick *rickAndMorty) SetCharacter(ctx context.Context, character outbound.C
 	if err != nil {
 		return err
 	}
+	fmt.Println(buf.Bytes())
 	return rick.Set(ctx, idKey, buf.Bytes(), 0).Err()
 }
 

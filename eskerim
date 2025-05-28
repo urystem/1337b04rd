@@ -22,3 +22,36 @@ my-project/
 
 
 
+
+
+your-project/
+├── cmd/                  # Точка входа (main.go)
+│   └── your-app/
+│       └── main.go
+│
+├── internal/             # Приватная логика
+│   ├── core/             # Domain: бизнес-логика, сущности, интерфейсы (порт)
+│   │   └── character/
+│   │       ├── entity.go         # Сущности (Entity)
+│   │       ├── repository.go     # Порт-интерфейсы (Repository, Storage)
+│   │       └── rules.go          # Методы и логика, правила
+│   │
+│   ├── usecase/          # Application: бизнес-сценарии
+│   │   └── character/
+│   │       ├── service.go       # Реализация use-case
+│   │       └── dto.go           # Вход/выход модели (DTO)
+│   │
+│   ├── adapter/          # Внешние реализации (in/out)
+│   │   ├── http/         # HTTP-интерфейс (REST API)
+│   │   │   ├── handler.go
+│   │   │   └── router.go
+│   │   ├── redis/        # Redis-реализация репозитория
+│   │   │   └── repo.go
+│   │   └── postgres/     # PostgreSQL-реализация репозитория
+│   │       └── repo.go
+│   │
+│   └── config/           # Конфигурация, env, флаги, DI
+│       └── config.go
+│
+├── go.mod
+└── README.md

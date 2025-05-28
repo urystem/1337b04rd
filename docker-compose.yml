@@ -1,14 +1,15 @@
 services:
     app:
       build: .
+      container_name: leetboard
       environment:
        - REDIS_PORT=${REDIS_PORT}
        - REDIS_PASS=${REDIS_PASS}
-       - REDIS_NUMBER_RICK=${REDIS_NUMBER_RICK}
       depends_on:
-       - redis
-    redis:
+       - redisDB
+    redisDB:
       image: redis:8.0.1-alpine
+      container_name: leetboard-redis
       ports:
       - 6379:${REDIS_PORT}
       command: sh -c "redis-server --requirepass \"$REDIS_PASS\""

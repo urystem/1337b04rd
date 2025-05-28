@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	"1337b04rd/internal/core/ports/outbound"
+	"1337b04rd/internal/ports/inbound"
+	"1337b04rd/internal/ports/outbound"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -15,8 +16,13 @@ type sessionRedis struct {
 	ttl time.Duration
 }
 
-func InitSessionRedis() outbound.SessionRedisInter {
-	return &sessionRedis{}
+func InitSessionRedis(red inbound.RedisConfig, ttl time.Duration) outbound.SessionRedisInter {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "redisDB:" + red.GetAddr(),
+		Password: red.GetPass(),
+		DB:       1,
+	})
+	return &sessionRedis{rdb, ttl}
 }
 
 // methods (adapters)
@@ -36,4 +42,3 @@ func (sr *sessionRedis) SetSession(ctx context.Context, session string) error {
 	// key, err := sr.RandomKey(ctx).Result()
 	return sr.Set(ctx, session, nil, sr.ttl).Err()
 }
-

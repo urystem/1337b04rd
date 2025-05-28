@@ -1,18 +1,39 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"net/http"
+	"time"
 
 	"1337b04rd/internal/adapters/driven/redis"
-	"1337b04rd/internal/config"
+	"1337b04rd/internal/usecase"
+	"1337b04rd/pkg/config"
 )
 
 func main() {
 	conf := config.InitConfig()
+
+	redisConf := conf.GetRedisConfig()
+	red := redis.InitRickRedis(redisConf)
+
+	use := usecase.InitRickAndMortyCase(red)
 	
-	red := redis.InitRickRedis(conf.GetRedisConfig())
-	
+	backCtx := context.Background()
+	ctx, cancel := context.WithTimeout(backCtx, 10*time.Second)
+	defer cancel()
+	ans, err := use.GetCharacter(ctx)
+	fmt.Println("three")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(ans.GetAvatar())
+		fmt.Println(ans.GetName())
+	}
+	fmt.Println("finish")
+	// sessionConf := conf.GetSessionConfig()
+	// redSession := redis.InitSessionRedis(redisConf, sessionConf.GetDuration())
 }
 
 func setCookieHandler(w http.ResponseWriter, r *http.Request) {
