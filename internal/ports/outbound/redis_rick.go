@@ -1,22 +1,16 @@
 package outbound
 
-import "context"
+import (
+	"context"
 
-type CharacterOutputInter interface {
-	GetName() string
-	GetAvatar() string
-}
-
-type CharacterInputInter interface {
-	GetID() uint64
-	CharacterOutputInter
-}
+	"1337b04rd/internal/domain"
+)
 
 type RickAndMortyRedisInter interface {
-	SetCharacter(ctx context.Context, character CharacterInputInter) error
-	GetAndDelRandomCharacter(ctx context.Context) (CharacterOutputInter, error)
+	SetCharacter(ctx context.Context, character *domain.Character) error
+	GetAndDelRandomCharacter(ctx context.Context) (*domain.Character, error)
 }
 
 type UseCaseRickAndMorty interface {
-	GetCharacter(ctx context.Context) (CharacterOutputInter, error)
+	GetCharacter(ctx context.Context) (*domain.Character, error)
 }

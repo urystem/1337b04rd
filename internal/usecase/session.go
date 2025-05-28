@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	"errors"
-	"log/slog"
 
 	rickandmorty "1337b04rd/internal/adapters/driven/rickApi"
+	"1337b04rd/internal/domain"
 	"1337b04rd/internal/ports/outbound"
 	myerrors "1337b04rd/pkg/myErrors"
 )
@@ -18,14 +18,13 @@ func InitRickAndMortyCase(redis outbound.RickAndMortyRedisInter) outbound.UseCas
 	return &rick{redis}
 }
 
-func (rick *rick) GetCharacter(ctx context.Context) (outbound.CharacterOutputInter, error) {
+func (rick *rick) GetCharacter(ctx context.Context) (*domain.Character, error) {
 	out, err := rick.GetAndDelRandomCharacter(ctx)
 	if err == nil {
 		return out, nil
 	} else if !errors.Is(err, myerrors.ErrRickSoldOut) {
 		return nil, err
 	}
-	slog.Info("soldout rick and morty")
 	err = rick.setCharacters(ctx)
 	if err != nil {
 		return nil, err
@@ -34,21 +33,18 @@ func (rick *rick) GetCharacter(ctx context.Context) (outbound.CharacterOutputInt
 }
 
 func (rick *rick) setCharacters(ctx context.Context) error {
-	slog.Info("starting set to redis")
-	for page := 1; page < 3; page++ {
+	for page := 1; ; page++ {
 		characters, err := rickandmorty.GetCharacters(page)
 		if err != nil {
 			return err
 		} else if len(characters) == 0 {
-			slog.Info("page sold out")
 			return nil
 		}
 		for i := range characters {
-			err = rick.SetCharacter(ctx, characters[i])
+			err = rick.SetCharacter(ctx, &characters[i])
 			if err != nil {
 				return err
 			}
 		}
 	}
-	return nil
 }

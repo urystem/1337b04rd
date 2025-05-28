@@ -1,7 +1,7 @@
-package character
+package domain
 
 type Character struct {
-	ID    uint64 
-	Name  string
-	Image string 
+	ID    uint64 `json:"id"`
+	Name  string `json:"name"`
+	Image string `json:"image"`
 }

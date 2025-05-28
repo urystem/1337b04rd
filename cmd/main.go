@@ -19,17 +19,18 @@ func main() {
 	red := redis.InitRickRedis(redisConf)
 
 	use := usecase.InitRickAndMortyCase(red)
-	
-	backCtx := context.Background()
-	ctx, cancel := context.WithTimeout(backCtx, 10*time.Second)
+
+	mainCtx := context.Background()
+	ctx, cancel := context.WithTimeout(mainCtx, 10*time.Second)
 	defer cancel()
 	ans, err := use.GetCharacter(ctx)
-	fmt.Println("three")
+
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println(ans.GetAvatar())
-		fmt.Println(ans.GetName())
+		fmt.Println(ans.ID)
+		fmt.Println(ans.Name)
+		fmt.Println(ans.Image)
 	}
 	fmt.Println("finish")
 	// sessionConf := conf.GetSessionConfig()
