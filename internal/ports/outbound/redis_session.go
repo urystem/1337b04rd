@@ -1,9 +1,14 @@
 package outbound
 
-import "context"
+import (
+	"context"
+
+	"1337b04rd/internal/domain"
+
+	"github.com/google/uuid"
+)
 
 type SessionRedisInter interface {
-	CheckSession(ctx context.Context, session string) (bool, error)
-	SetSession(ctx context.Context, session string) error
+	GetUserBySession(ctx context.Context, session uuid.UUID) (*domain.Session, error)
+	SetSession(ctx context.Context, session *domain.Session) error
 }
-

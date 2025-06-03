@@ -1,0 +1,35 @@
+package postgres
+
+import (
+	"context"
+	"fmt"
+
+	"1337b04rd/internal/ports/inbound"
+	"1337b04rd/internal/ports/outbound"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+// DB
+type poolDB struct {
+	*pgxpool.Pool
+}
+
+func InitDB(ctx context.Context, cfg inbound.DBConfig) (outbound.PostGres, error) {
+	dsn := fmt.Sprintf(
+		"postgresql://%s:%s@%s:%d/%s?sslmode=%s",
+		cfg.GetUser(),
+		cfg.GetPassword(),
+		cfg.GetHostName(),
+		cfg.GetPort(),
+		cfg.GetDBName(),
+		cfg.GetSSLMode(),
+	)
+	pool, err := pgxpool.New(ctx, dsn)
+	if err != nil {
+		return nil, err
+	}
+	// the close must be in main.go
+	defer pool.Close()
+	return &poolDB{pool}, nil
+}

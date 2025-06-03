@@ -6,14 +6,17 @@ import (
 	"net/http"
 
 	"1337b04rd/internal/domain"
+	"1337b04rd/internal/ports/outbound"
 )
 
-type rickMortyReader struct {
-	Characters []domain.Character `json:"results"`
+type rickAndMorty struct{}
+
+func InitRickApi() outbound.RickAndMortyApi {
+	return &rickAndMorty{}
 }
 
-func GetCharacters(p int) ([]domain.Character, error) {
-	var ans rickMortyReader
+func (rickApi *rickAndMorty) GetCharacters(p int) ([]domain.Character, error) {
+	var ans domain.RickMortyReader
 	url := fmt.Sprintf("https://rickandmortyapi.com/api/character?page=%d", p)
 	r, err := http.Get(url)
 	if err != nil {

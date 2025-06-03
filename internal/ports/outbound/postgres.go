@@ -1,6 +1,12 @@
 package outbound
 
+import (
+	"context"
+
+	"1337b04rd/internal/domain"
+)
+
 type PostGres interface {
-	CreateComment() error
-	
+	GetPosts(context.Context) ([]domain.Post, error)
+	// CreateComment() error
 }

@@ -1,76 +1,52 @@
 package middleware
 
 import (
-	"context"
 	"errors"
-	"log/slog"
 	"net/http"
-	"time"
 
-	"1337b04rd/internal/ports/inbound"
-	"1337b04rd/internal/ports/outbound"
-
-	"github.com/google/uuid"
+	"1337b04rd/pkg/contextkeys"
 )
-
-type session struct {
-	cookieName string
-	ttl        time.Duration
-	redis      outbound.SessionRedisInter
-	logger     *slog.Logger
-}
-
-func InitSession(name string, ttl time.Duration, redis outbound.SessionRedisInter, logger *slog.Logger) inbound.MiddleWareInter {
-	return &session{name, ttl, redis, logger}
-}
 
 func (s *session) CheckOrSetSession(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+
+		createNew := func() {
+			ses := s.ser.NewSession(ctx)
+			if ses == nil {
+				//
+				return
+			}
+			http.SetCookie(w, &http.Cookie{
+				Name:     s.cookieName,
+				Value:    ses.Uuid.String(),
+				Path:     "/",
+				MaxAge:   int(s.ttl.Seconds()),
+				HttpOnly: true,
+				Secure:   true,
+				SameSite: http.SameSiteLaxMode,
+			})
+			ctx = contextkeys.NewContext(ctx, ses)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		}
+
 		cookie, err := r.Cookie(s.cookieName)
 		if err != nil {
 			if errors.Is(err, http.ErrNoCookie) {
-				http.SetCookie(w, s.newSessionCookie(ctx))
-				next.ServeHTTP(w, r)
-				return
+				createNew()
+			} else {
+				http.Error(w, "server error", http.StatusInternalServerError)
 			}
-
-			s.logger.Error("server", "error", err)
-			http.Error(w, "server error", http.StatusInternalServerError)
 			return
 		}
+		ses := s.ser.GetSession(ctx, cookie.Value)
+		if ses != nil {
+			ctx = contextkeys.NewContext(ctx, ses)
+			next.ServeHTTP(w, r.WithContext(ctx))
 
-		has, err := s.redis.CheckSession(ctx, cookie.Value)
-		if err != nil {
-			s.logger.Error("server", "error", err)
-			http.Error(w, "server error", http.StatusInternalServerError)
-			return
+		} else {
+			// Кука есть, но сессия невалидна — создаём новую
+			createNew()
 		}
-
-		if !has {
-			http.SetCookie(w, s.newSessionCookie(ctx))
-			next.ServeHTTP(w, r)
-			return
-		}
-		next.ServeHTTP(w, r)
 	})
-}
-
-func (s *session) newSessionCookie(ctx context.Context) *http.Cookie {
-	uuid := s.generateSessionID()
-	s.redis.SetSession(ctx, uuid)
-	return &http.Cookie{
-		Name:     s.cookieName,
-		Value:    uuid,
-		Path:     "/",
-		MaxAge:   3600,
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
-	}
-}
-
-func (s *session) generateSessionID() string {
-	id := uuid.New() // Это UUIDv4 по умолчанию
-	return id.String()
 }

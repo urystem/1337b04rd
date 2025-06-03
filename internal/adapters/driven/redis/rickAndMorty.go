@@ -18,13 +18,13 @@ type rickAndMorty struct {
 	*redis.Client
 }
 
-func InitRickRedis(red inbound.RedisConfig) outbound.RickAndMortyRedisInter {
+func InitRickRedis(ctx context.Context, red inbound.RedisConfig) (outbound.RickAndMortyRedisInter, error) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "redisDB:" + red.GetAddr(), // имя сервиса + порт                 // адрес Redis
 		Password: red.GetPass(),              // пароль, если есть
 		DB:       0,                          // номер БД (0 по умолчанию)
 	})
-	return &rickAndMorty{rdb}
+	return &rickAndMorty{rdb}, rdb.Ping(ctx).Err()
 }
 
 func (rick *rickAndMorty) SetCharacter(ctx context.Context, character *domain.Character) error {
@@ -56,7 +56,7 @@ func (rick *rickAndMorty) GetAndDelRandomCharacter(ctx context.Context) (*domain
 		return nil, err
 	}
 
-	go rick.Del(ctx, key)
+	rick.Del(ctx, key)
 
 	return character, nil
 }
