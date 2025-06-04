@@ -60,3 +60,7 @@ func (rick *rickAndMorty) GetAndDelRandomCharacter(ctx context.Context) (*domain
 
 	return character, nil
 }
+
+func (rick *rickAndMorty) Close() error {
+	return rick.Close()
+}

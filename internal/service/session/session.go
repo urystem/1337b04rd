@@ -25,7 +25,7 @@ func (s *session) NewSession(ctx context.Context) *domain.Session {
 		return nil
 	}
 
-	newSession := &domain.Session{Uuid: uuid.New(), Name: newCharacter.Image, AvatarURL: newCharacter.Image}
+	newSession := &domain.Session{Uuid: uuid.New(), Name: newCharacter.Name, AvatarURL: newCharacter.Image}
 	err = s.sessinoRedis.SetSession(ctx, newSession)
 	if err != nil {
 		//

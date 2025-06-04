@@ -66,3 +66,7 @@ func (sr *sessionRedis) SetSession(ctx context.Context, session *domain.Session)
 
 	return sr.Set(ctx, keyUUID, buf.Bytes(), sr.ttl).Err()
 }
+
+func (sr *sessionRedis) Close() error {
+	return sr.Close()
+}

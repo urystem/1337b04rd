@@ -1,7 +1,11 @@
 package outbound
 
-import "1337b04rd/internal/domain"
+import (
+	"context"
+
+	"1337b04rd/internal/domain"
+)
 
 type RickAndMortyApi interface {
-	GetCharacters(p int) ([]domain.Character, error)
+	GetCharacters(ctx context.Context, p int) ([]domain.Character, error)
 }

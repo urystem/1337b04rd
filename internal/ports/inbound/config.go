@@ -2,6 +2,10 @@ package inbound
 
 import "time"
 
+type ServerCfg interface {
+	GetPort() int
+}
+
 type DBConfig interface {
 	GetHostName() string
 	GetPort() int
@@ -22,7 +26,7 @@ type RedisConfig interface {
 }
 
 type Config interface {
-	GetPort() int
+	GetPort() ServerCfg
 	GetDBConfig() DBConfig
 	GetSessionConfig() SessionConfig
 	GetRedisConfig() RedisConfig

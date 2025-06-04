@@ -6,6 +6,9 @@ import (
 
 func (r *router) NewServe() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /", r.Catalog)
+	mux.Handle("GET /", r.MiddleWareInter.CheckOrSetSession(http.HandlerFunc(r.Catalog)))
+	// mux.Handle("GET /", r.MiddleWareInter.CheckOrSetSession(http.HandlerFunc(r.Catalog)))
+
+	// return r.MiddleWareInter.CheckOrSetSession(mux)
 	return mux
 }

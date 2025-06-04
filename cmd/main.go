@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"time"
+
 	"1337b04rd/internal/adapters/driven/redis"
 	rickandmorty "1337b04rd/internal/adapters/driven/rickApi"
 	"1337b04rd/internal/adapters/driver/http/middleware"
@@ -10,23 +13,24 @@ import (
 )
 
 func main() {
-	conf := config.InitConfig()
+	ctxBack := context.Background()
 
-	redisConf := conf.GetRedisConfig()
+	cfg := config.Load()
+
+	redisConf := cfg.GetRedisConfig()
 
 	// init rick redis #1
-	rickRedis := redis.InitRickRedis(redisConf)
-
+	rickRedis, err := redis.InitRickRedis(ctxBack, redisConf)
 	// init rickandmorty redisDB
-	rickApi := rickandmorty.InitRickApi()
+	rickApi := rickandmorty.InitRickApi(10 * time.Second)
 	// init rick service (first layer)
 	rickService := rickAndMorty.InitRickAndMortyCase(rickApi, rickRedis)
 
 	// init session config
-	sessionConf := conf.GetSessionConfig()
+	sessionConf := cfg.GetSessionConfig()
 
 	// init session redis #2
-	sessionRedis := redis.InitSessionRedis(redisConf, sessionConf.GetDuration())
+	sessionRedis, err := redis.InitSessionRedis(ctxBack, redisConf, sessionConf.GetDuration())
 
 	// init rick service (second layer)
 	sessionService := session.InitSession(sessionRedis, rickService)
@@ -34,5 +38,5 @@ func main() {
 	// session cookie middleware
 	sessionMiddleware := middleware.InitSession(sessionConf, sessionService)
 
-	conf.GetDBConfig()
+	cfg.GetDBConfig()
 }

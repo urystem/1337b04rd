@@ -3,7 +3,7 @@ package config
 import "1337b04rd/internal/ports/inbound"
 
 type config struct {
-	port int
+	server inbound.ServerCfg
 
 	db inbound.DBConfig
 
@@ -14,7 +14,7 @@ type config struct {
 	s3 minio
 }
 
-func InitConfig() inbound.Config {
+func Load() inbound.Config {
 	conf := &config{}
 	// conf.db = conf.initDBConfig()
 	// conf.session = conf.initSessionConf()
@@ -22,8 +22,8 @@ func InitConfig() inbound.Config {
 	return conf
 }
 
-func (conf *config) GetPort() int {
-	return conf.port
+func (conf *config) GetPort() inbound.ServerCfg {
+	return conf.server
 }
 
 func (conf *config) GetDBConfig() inbound.DBConfig {
