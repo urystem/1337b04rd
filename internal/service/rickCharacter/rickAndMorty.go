@@ -15,7 +15,7 @@ type rick struct {
 	redis   outbound.RickAndMortyRedisInter
 }
 
-func InitRickAndMortyCase(api outbound.RickAndMortyApi, redis outbound.RickAndMortyRedisInter) inbound.UseCaseRickAndMorty {
+func InitRickAndMortyRedis(api outbound.RickAndMortyApi, redis outbound.RickAndMortyRedisInter) inbound.UseCaseRickAndMorty {
 	return &rick{rickApi: api, redis: redis}
 }
 

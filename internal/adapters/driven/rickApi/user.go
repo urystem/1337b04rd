@@ -11,19 +11,19 @@ import (
 	"1337b04rd/internal/ports/outbound"
 )
 
-type rickAndMorty struct {
-	client *http.Client
+type rickApiClient struct {
+	*http.Client
 }
 
 func InitRickApi(timeOut time.Duration) outbound.RickAndMortyApi {
-	return &rickAndMorty{
+	return &rickApiClient{
 		&http.Client{
 			Timeout: timeOut,
 		},
 	}
 }
 
-func (rickApi *rickAndMorty) GetCharacters(ctx context.Context, p int) ([]domain.Character, error) {
+func (rickApi *rickApiClient) GetCharacters(ctx context.Context, p int) ([]domain.Character, error) {
 	var ans domain.RickMortyReader
 	url := fmt.Sprintf("https://rickandmortyapi.com/api/character?page=%d", p)
 	// req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -32,7 +32,7 @@ func (rickApi *rickAndMorty) GetCharacters(ctx context.Context, p int) ([]domain
 	// }
 	// r, err := rickApi.client.Do(req)
 
-	r, err := rickApi.client.Get(url)
+	r, err := rickApi.Get(url)
 	// r, err := http.Get(url)
 	if err != nil {
 		return nil, err
