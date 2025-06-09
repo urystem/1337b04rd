@@ -26,6 +26,7 @@ func (rick *rick) GetRandomCharacterAndDel(ctx context.Context) (*domain.Charact
 	} else if !errors.Is(err, myerrors.ErrRickSoldOut) {
 		return nil, err
 	}
+
 	err = rick.setCharacters(ctx)
 	if err != nil {
 		return nil, err
@@ -33,9 +34,15 @@ func (rick *rick) GetRandomCharacterAndDel(ctx context.Context) (*domain.Charact
 	return rick.redis.GetAndDelRandomCharacter(ctx)
 }
 
+func (rick *rick) GET() {
+}
+
+func (rick *rick) GetRandomCharacterAndDel3(ctx context.Context) {
+}
+
 func (rick *rick) setCharacters(ctx context.Context) error {
 	for page := 1; ; page++ {
-		characters, err := rick.rickApi.GetCharacters(context.TODO(), page)
+		characters, err := rick.rickApi.GetCharacters(ctx, page)
 		if err != nil {
 			return err
 		} else if len(characters) == 0 {

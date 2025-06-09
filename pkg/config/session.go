@@ -13,8 +13,8 @@ type sessionConfig struct {
 
 func (c *config) initSessionConf() inbound.SessionConfig {
 	conf := &sessionConfig{}
-	conf.cookieName = mustGetEnvString("")
-	conf.duration = time.Duration(mustGetEnvInt(""))
+	conf.cookieName = mustGetEnvString("SESSION_NAME")
+	conf.duration = time.Duration(mustGetEnvInt("SESSION_DURATION")) * 24 * time.Hour
 	return conf
 }
 

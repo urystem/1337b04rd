@@ -27,13 +27,13 @@ func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) 
 	sessionCfg := cfg.GetSessionConfig()
 	redisCfg := cfg.GetRedisConfig()
 
-	middleware, err := app.middleWare(ctx, sessionCfg, redisCfg)
+	_, err := app.middleWare(ctx, sessionCfg, redisCfg)
 	if err != nil {
 		return nil, errors.Join(err, app.Shutdown(ctx))
 	}
 
 	
-	middleware.CheckOrSetSession(nil)
+	// middleware.CheckOrSetSession(nil)
 	return app, nil
 }
 
@@ -46,5 +46,5 @@ func (app *myApp) Shutdown(ctx context.Context) error {
 }
 
 func (app *myApp) Run() error {
-	return app.srv.Run()
+	return app.srv.ListenServe()
 }

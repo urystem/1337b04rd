@@ -13,14 +13,14 @@ func main() {
 
 	cfg := config.Load()
 
-	app, err := bootstrap.InitApp(ctxBack, cfg)
+	_, err := bootstrap.InitApp(ctxBack, cfg)
 	if err != nil {
 		slog.Error(err.Error())
 	}
 
-	go func() {
-		app.Run()
-	}()
-	<-ctxBack.Done()
-	app.Shutdown(ctxBack)
+	// go func() {
+	// 	app.Run()
+	// }()
+	// <-ctxBack.Done()
+	// app.Shutdown(ctxBack)
 }

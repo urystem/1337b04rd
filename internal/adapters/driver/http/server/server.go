@@ -24,7 +24,7 @@ func (srv *server) SetHandler(hand http.Handler) {
 	srv.Handler = hand
 }
 
-func (srv *server) Run() error {
+func (srv *server) ListenServe() error {
 	return srv.ListenAndServe()
 }
 

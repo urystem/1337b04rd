@@ -17,12 +17,13 @@ type config struct {
 func Load() inbound.Config {
 	conf := &config{}
 	// conf.db = conf.initDBConfig()
-	// conf.session = conf.initSessionConf()
+	conf.session = conf.initSessionConf()
+	conf.server = conf.initServerCfg()
 	conf.redis = conf.initRedisConf()
 	return conf
 }
 
-func (conf *config) GetPort() inbound.ServerCfg {
+func (conf *config) GetServerCfg() inbound.ServerCfg {
 	return conf.server
 }
 

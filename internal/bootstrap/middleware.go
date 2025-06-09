@@ -2,6 +2,7 @@ package bootstrap
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"1337b04rd/internal/adapters/driven/redis"
@@ -29,7 +30,7 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 
 	// init rick service (first layer)
 	rickService := rickCharacter.InitRickAndMortyRedis(rickApi, rickRedis)
-
+	
 	sessionRedis, err := redis.InitSessionRedis(ctx, redisCfg, sessionCfg.GetDuration())
 	if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 
 	// init rick service (second layer)
 	sessionService := session.InitSession(sessionRedis, rickService)
-
+	fmt.Println(sessionService.NewSession(ctx))
 	sessionMiddleware := middleware.InitSession(sessionCfg, sessionService)
 
 	return sessionMiddleware, nil

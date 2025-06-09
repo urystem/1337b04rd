@@ -29,11 +29,10 @@ func InitDB(ctx context.Context, cfg inbound.DBConfig) (outbound.PostGres, error
 	if err != nil {
 		return nil, err
 	}
-
-	defer pool.Close()
 	return &poolDB{pool}, nil
 }
 
-func (pool *poolDB) Close() error {
-	return pool.Close()
+func (pool *poolDB) CloseDB() {
+	pool.Close()
 }
+

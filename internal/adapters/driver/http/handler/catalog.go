@@ -7,7 +7,7 @@ import (
 )
 
 func (h *handler) Catalog(w http.ResponseWriter, r *http.Request) {
-	posts, err := h.Usecase.ListOfPosts()
+	posts, err := h.use.ListOfPosts()
 	if err != nil {
 		// http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		slog.Error("dsfd")

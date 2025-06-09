@@ -8,5 +8,6 @@ import (
 
 type PostGres interface {
 	GetPosts(context.Context) ([]domain.Post, error)
+	CloseDB()
 	// CreateComment() error
 }
