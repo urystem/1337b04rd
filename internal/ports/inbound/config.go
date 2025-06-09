@@ -26,7 +26,7 @@ type RedisConfig interface {
 }
 
 type Config interface {
-	GetPort() ServerCfg
+	GetServerCfg() ServerCfg
 	GetDBConfig() DBConfig
 	GetSessionConfig() SessionConfig
 	GetRedisConfig() RedisConfig

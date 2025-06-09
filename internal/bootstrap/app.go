@@ -2,47 +2,49 @@ package bootstrap
 
 import (
 	"context"
-	"time"
+	"errors"
+	"sync"
 
-	"1337b04rd/internal/adapters/driven/redis"
-	rickandmorty "1337b04rd/internal/adapters/driven/rickApi"
-	"1337b04rd/internal/adapters/driver/http/middleware"
+	"1337b04rd/internal/adapters/driver/http/server"
 	"1337b04rd/internal/ports/inbound"
-	rickCharacter "1337b04rd/internal/service/rickCharacter"
-	"1337b04rd/internal/service/session"
 )
 
 // DI container
-type app struct {
-	inbound.ServerInter
+type myApp struct {
+	srv inbound.ServerInter
+	wg  sync.WaitGroup
 }
 
-func InitApp(ctx context.Context, cfg inbound.Config) (inbound.ServerInter, error) {
-	
-	redisConf := cfg.GetRedisConfig()
+func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) {
+	// init server
+	srvCfg := cfg.GetServerCfg()
+	mySrv := server.InitServer(srvCfg)
 
-	// init rick redis #1
-	rickRedis, err := redis.InitRickRedis(ctx, redisConf)
+	// init app
+	app := &myApp{srv: mySrv}
+
+	// init middleware to app
+	sessionCfg := cfg.GetSessionConfig()
+	redisCfg := cfg.GetRedisConfig()
+
+	middleware, err := app.middleWare(ctx, sessionCfg, redisCfg)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(err, app.Shutdown(ctx))
 	}
 
-	// init rickandmorty redisDB
-	rickApi := rickandmorty.InitRickApi(10 * time.Second)
+	
+	middleware.CheckOrSetSession(nil)
+	return app, nil
+}
 
-	// init rick service (first layer)
-	rickService := rickCharacter.InitRickAndMortyRedis(rickApi, rickRedis)
+func (app *myApp) Shutdown(ctx context.Context) error {
+	err := app.srv.ShutdownGracefully(ctx)
+	if err == nil {
+		app.wg.Wait()
+	}
+	return err
+}
 
-	// init session config
-	sessionConf := cfg.GetSessionConfig()
-
-	// init session redis #2
-	sessionRedis, err := redis.InitSessionRedis(ctx, redisConf, sessionConf.GetDuration())
-
-	// init rick service (second layer)
-	sessionService := session.InitSession(sessionRedis, rickService)
-
-	// session cookie middleware
-	sessionMiddleware := middleware.InitSession(sessionConf, sessionService)
-	return &app{}
+func (app *myApp) Run() error {
+	return app.srv.Run()
 }

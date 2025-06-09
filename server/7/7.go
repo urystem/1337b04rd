@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"sync"
@@ -29,20 +28,20 @@ func main() {
 		wg.Done()
 	})
 
-	// go func() {
-	// 	// if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-	// 	if err := srv.ListenAndServe(); err != nil {
-	// 		fmt.Println("Server error:", err)
-	// 	}
-	// }()
+	go func() {
+		// if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil {
+			fmt.Println("Server error:", err)
+		}
+	}()
 
 	time.Sleep(3 * time.Second) // ждем, чтобы сервер "поработал"
 
-	fmt.Println("Calling shutdown...")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	cancel()
+	// fmt.Println("Calling shutdown...")
+	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if err := srv.Close(); err != nil {
 		fmt.Println("Shutdown error:", err)
 	}
 

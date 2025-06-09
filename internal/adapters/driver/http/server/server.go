@@ -8,31 +8,34 @@ import (
 	"1337b04rd/internal/ports/inbound"
 )
 
-	type server struct {
-		*http.Server
-	}
+type server struct {
+	*http.Server
+}
 
-	// type server *http.Server
+// type server *http.Server
 
-	func InitServer(hand http.Handler, cfg inbound.ServerCfg) inbound.ServerInter {
-		addr := fmt.Sprintf("%d", cfg.GetPort())
+func InitServer(cfg inbound.ServerCfg) inbound.ServerInter {
+	return &server{&http.Server{
+		Addr: fmt.Sprintf("%d", cfg.GetPort()),
+	}}
+}
 
-		srv := http.Server{
-			Addr:    addr,
-			Handler: hand,
-		}
+func (srv *server) SetHandler(hand http.Handler) {
+	srv.Handler = hand
+}
 
-		return &server{&srv}
-	}
+func (srv *server) Run() error {
+	return srv.ListenAndServe()
+}
 
-	func (srv *server) Run() error {
-		return srv.ListenAndServe()
-	}
+func (srv *server) ShutdownGracefully(ctx context.Context) error {
+	return srv.Shutdown(ctx)
+}
 
-	func (srv *server) ShutdownGracefully(ctx context.Context) error {
-		return srv.Shutdown(ctx)
-	}
+func (srv *server) RegisterOnShutDown(f func()) {
+	srv.RegisterOnShutdown(f)
+}
 
-	func (srv *server) RegisterOnShutDown(f func()) {
-		srv.RegisterOnShutdown(f)
-	}
+func (srv *server) CloseServer() error {
+	return srv.Close()
+}

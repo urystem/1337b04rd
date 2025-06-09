@@ -47,6 +47,13 @@ func main() {
 	}
 
 	wg.Wait() // ждём, пока все shutdown-функции завершатся
-
+	go func() {
+		fmt.Println("start")
+		// if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServe(); err != nil {
+			fmt.Println("Server error:", err)
+		}
+	}()
+	time.Sleep(5 * time.Second)
 	fmt.Println("All shutdown tasks done, exiting")
 }
