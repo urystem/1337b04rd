@@ -1,0 +1,17 @@
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - 9002:9000   # S3 API
+      - 9001:9001   # Web-интерфейс
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    # volumes:
+      # - ./minio/data:/data   # ⬅ сохраняем в ./data локально
+      # - ./minio/certs:/root/.minio/certs 
+
+# volumes:
+#   minio_data: 

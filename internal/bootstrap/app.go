@@ -31,9 +31,7 @@ func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) 
 	if err != nil {
 		return nil, errors.Join(err, app.Shutdown(ctx))
 	}
-
 	
-	// middleware.CheckOrSetSession(nil)
 	return app, nil
 }
 
