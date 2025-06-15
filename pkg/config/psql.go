@@ -1,7 +1,5 @@
 package config
 
-import "1337b04rd/internal/ports/inbound"
-
 type dbConfig struct {
 	host     string
 	port     int
@@ -11,8 +9,8 @@ type dbConfig struct {
 	sslMode  string
 }
 
-func (c *config) initDBConfig() inbound.DBConfig {
-	dbConf := &dbConfig{}
+func (c *config) initDBConfig() dbConfig {
+	dbConf := dbConfig{}
 	dbConf.host = mustGetEnvString("DB_HOST")
 	dbConf.port = mustGetEnvInt("DB_PORT")
 	dbConf.user = mustGetEnvString("DB_USER")

@@ -1,18 +1,14 @@
 package config
 
-import (
-	"time"
-
-	"1337b04rd/internal/ports/inbound"
-)
+import "time"
 
 type sessionConfig struct {
 	cookieName string
 	duration   time.Duration
 }
 
-func (c *config) initSessionConf() inbound.SessionConfig {
-	conf := &sessionConfig{}
+func (c *config) initSessionConf() sessionConfig {
+	conf := sessionConfig{}
 	conf.cookieName = mustGetEnvString("SESSION_NAME")
 	conf.duration = time.Duration(mustGetEnvInt("SESSION_DURATION")) * 24 * time.Hour
 	return conf

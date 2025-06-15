@@ -3,13 +3,13 @@ package config
 import "1337b04rd/internal/ports/inbound"
 
 type config struct {
-	server inbound.ServerCfg
+	server serverCfg
 
-	db inbound.DBConfig
+	db dbConfig
 
-	session inbound.SessionConfig
+	session sessionConfig
 
-	redis inbound.RedisConfig
+	redis redisConfig
 
 	s3 minio
 }
@@ -24,17 +24,21 @@ func Load() inbound.Config {
 }
 
 func (conf *config) GetServerCfg() inbound.ServerCfg {
-	return conf.server
+	return &conf.server
 }
 
 func (conf *config) GetDBConfig() inbound.DBConfig {
-	return conf.db
+	return &conf.db
 }
 
 func (conf *config) GetSessionConfig() inbound.SessionConfig {
-	return conf.session
+	return &conf.session
 }
 
 func (conf *config) GetRedisConfig() inbound.RedisConfig {
-	return conf.redis
+	return &conf.redis
+}
+
+func (cfg *config) GetMinioCfg() inbound.MinioCfg {
+	return &cfg.s3
 }

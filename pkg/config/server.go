@@ -1,13 +1,11 @@
 package config
 
-import "1337b04rd/internal/ports/inbound"
-
 type serverCfg struct {
 	port int
 }
 
-func (c *config) initServerCfg() inbound.ServerCfg {
-	cfg := &serverCfg{}
+func (c *config) initServerCfg() serverCfg {
+	cfg := serverCfg{}
 	cfg.port = mustGetEnvInt("SERVER_PORT")
 	return cfg
 }

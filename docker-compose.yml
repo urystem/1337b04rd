@@ -1,20 +1,36 @@
 services:
-    app:
-      build: .
-      container_name: leetboard
-      environment:
-       - SERVER_PORT=${SERVER_PORT}
+    # app:
+    #   build: .
+    #   container_name: leetboard
+    #   environment:
+    #    - SERVER_PORT=${SERVER_PORT}
 
-       - REDIS_PORT=${REDIS_PORT}
-       - REDIS_PASS=${REDIS_PASS}
+    #    - REDIS_PORT=${REDIS_PORT}
+    #    - REDIS_PASS=${REDIS_PASS}
 
-       - SESSION_NAME=${SESSION_NAME}
-       - SESSION_DURATION=${SESSION_DURATION}
-      depends_on:
-       - redisDB
-    redisDB:
-      image: redis:8.0.1-alpine
-      container_name: leetboard-redis
+    #    - SESSION_NAME=${SESSION_NAME}
+    #    - SESSION_DURATION=${SESSION_DURATION}
+    #   depends_on:
+    #    - redisDB
+    # redisDB:
+    #   image: redis:8.0.1-alpine
+    #   container_name: leetboard-redis
+    #   ports:
+    #   - 6379:${REDIS_PORT}
+    #   command: sh -c "redis-server --requirepass \"$REDIS_PASS\"" # to set password
+    minio:
+      image: minio/minio
+      container_name: leetboard-minio
       ports:
-      - 6379:${REDIS_PORT}
-      command: sh -c "redis-server --requirepass \"$REDIS_PASS\"" # to set password
+        - 9002:9000   # S3 API
+        - 9001:9001   # Web-интерфейс
+      environment:
+        MINIO_ROOT_USER: ${S3_ROOT_USER}
+        MINIO_ROOT_PASSWORD: ${S3_ROOT_PASSWORD}
+      command: server /data --console-address ":9001"
+      # volumes:
+        # - ./minio/data:/data   # ⬅ сохраняем в ./data локально
+        # - ./minio/certs:/root/.minio/certs 
+
+# volumes:
+#   minio_data: 

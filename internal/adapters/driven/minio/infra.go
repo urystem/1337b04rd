@@ -1,22 +1,66 @@
 package minio
 
-type minio struct {
+import (
+	"context"
+
+	"1337b04rd/internal/ports/inbound"
+
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+)
+
+type minIo struct {
+	client     *minio.Client
 	postBuc    string
 	commentBuc string
+	// need time
 }
 
-func s() any {
+func InitMinio(ctx context.Context, cfg inbound.MinioCfg) (any, error) {
 	// // Инициализация клиента
-	// minioClient, err := minio.New(endpoint, &minio.Options{
-	// 	Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-	// 	Secure: useSSL,
-	// })
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
+	endpoint := cfg.GetEndpoint()
+	accessKey := cfg.GetAccessKey()
+	secretkey := cfg.GetSecretKey()
+	secure := cfg.GetSecure()
 
-	// ctx := context.Background()
-	// bucketName := "my-bucket"
+	minioClient, err := minio.New(endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKey, secretkey, ""),
+		Secure: secure,
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	return &minio{}
+	postBucName := cfg.GetPostBucketName()
+	err = createBucket(ctx, minioClient, postBucName)
+	if err != nil {
+		return nil, err
+	}
+
+	commentBucName := cfg.GetCommentBucketName()
+	err = createBucket(ctx, minioClient, commentBucName)
+	if err != nil {
+		return nil, err
+	}
+
+	return &minIo{
+		client:     minioClient,
+		postBuc:    postBucName,
+		commentBuc: commentBucName,
+	}, nil
+}
+
+func createBucket(ctx context.Context, mc *minio.Client, bucName string) error {
+	err := mc.MakeBucket(ctx, bucName, minio.MakeBucketOptions{})
+	if err == nil {
+		return nil
+	}
+
+	exists, errExists := mc.BucketExists(ctx, bucName)
+	if errExists != nil {
+		return errExists
+	} else if !exists {
+		return err
+	}
+	return nil
 }

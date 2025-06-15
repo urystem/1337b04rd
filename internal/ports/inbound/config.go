@@ -25,6 +25,16 @@ type RedisConfig interface {
 	GetPass() string
 }
 
+type MinioCfg interface {
+	GetEndpoint() string
+	GetAccessKey() string
+	GetSecretKey() string
+	GetRegion() string
+	GetSecure() bool
+	GetPostBucketName() string
+	GetCommentBucketName() string
+}
+
 type Config interface {
 	GetServerCfg() ServerCfg
 	GetDBConfig() DBConfig
