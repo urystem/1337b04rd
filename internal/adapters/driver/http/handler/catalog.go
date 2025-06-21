@@ -7,14 +7,15 @@ import (
 )
 
 func (h *handler) Catalog(w http.ResponseWriter, r *http.Request) {
-	posts, err := h.use.ListOfPosts()
+	posts, err := h.use.ListOfPosts(r.Context())
 	if err != nil {
 		// http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		slog.Error("dsfd")
+		http.Error(w, "Error loading posts", http.StatusInternalServerError)
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/catalog.html")
+	tmpl, err := template.ParseFiles("web/templates/catalog.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
@@ -23,5 +24,6 @@ func (h *handler) Catalog(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, posts)
 	if err != nil {
 		slog.Error("exe")
+		http.Error(w, "Execution error", http.StatusInternalServerError)
 	}
 }

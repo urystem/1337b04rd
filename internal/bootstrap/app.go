@@ -5,6 +5,8 @@ import (
 	"errors"
 	"sync"
 
+	"1337b04rd/internal/adapters/driver/http/handler"
+	"1337b04rd/internal/adapters/driver/http/router"
 	"1337b04rd/internal/adapters/driver/http/server"
 	"1337b04rd/internal/ports/inbound"
 )
@@ -27,11 +29,26 @@ func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) 
 	sessionCfg := cfg.GetSessionConfig()
 	redisCfg := cfg.GetRedisConfig()
 
-	_, err := app.middleWare(ctx, sessionCfg, redisCfg)
+	middle, err := app.middleWare(ctx, sessionCfg, redisCfg)
 	if err != nil {
 		return nil, errors.Join(err, app.Shutdown(ctx))
 	}
-	
+
+	// init service(usecase)
+	dbCfg := cfg.GetDBConfig()
+	minIoCfg := cfg.GetMinIoConfig()
+	useCase, err := app.InitService(ctx, dbCfg, minIoCfg)
+	if err != nil {
+		return nil, errors.Join(err, app.Shutdown(ctx))
+	}
+
+	// init handler
+	handler := handler.InitHandler(middle, useCase)
+
+	// init router
+	router := router.NewRoute(middle, handler)
+
+	app.srv.SetHandler(router)
 	return app, nil
 }
 

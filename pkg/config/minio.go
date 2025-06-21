@@ -10,6 +10,7 @@ type minio struct {
 	secure         bool
 	bucketPosts    string
 	bucketComments string
+	// bucketAvatars  string
 }
 
 func (c *config) initMinio() minio {
@@ -21,6 +22,7 @@ func (c *config) initMinio() minio {
 	myMinio.secure = mustGetBoolean("S3_SECURE")
 	myMinio.bucketPosts = mustGetEnvString("S3_BUCKETNAME_POST")
 	myMinio.bucketComments = mustGetEnvString("S3_BUCKETNAME_COMMENT")
+	// myMinio.bucketAvatars = mustGetEnvString("S3_BUCKETNAME_AVATAR")
 	return myMinio
 }
 
@@ -51,3 +53,7 @@ func (m *minio) GetPostBucketName() string {
 func (m *minio) GetCommentBucketName() string {
 	return m.bucketComments
 }
+
+// func (m *minio) GetAvatarBucketName() string {
+// 	return m.bucketAvatars
+// }

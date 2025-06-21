@@ -33,6 +33,7 @@ type MinioCfg interface {
 	GetSecure() bool
 	GetPostBucketName() string
 	GetCommentBucketName() string
+	// GetAvatarBucketName() string
 }
 
 type Config interface {
@@ -40,4 +41,5 @@ type Config interface {
 	GetDBConfig() DBConfig
 	GetSessionConfig() SessionConfig
 	GetRedisConfig() RedisConfig
+	GetMinIoConfig() MinioCfg
 }

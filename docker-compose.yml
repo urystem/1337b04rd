@@ -1,23 +1,44 @@
 services:
-    # app:
-    #   build: .
-    #   container_name: leetboard
-    #   environment:
-    #    - SERVER_PORT=${SERVER_PORT}
+    app:
+      build: .
+      container_name: leetboard
+      environment:
+       - SERVER_PORT=${SERVER_PORT}
 
-    #    - REDIS_PORT=${REDIS_PORT}
-    #    - REDIS_PASS=${REDIS_PASS}
+       - REDIS_PORT=${REDIS_PORT}
+       - REDIS_PASS=${REDIS_PASS}
 
-    #    - SESSION_NAME=${SESSION_NAME}
-    #    - SESSION_DURATION=${SESSION_DURATION}
-    #   depends_on:
-    #    - redisDB
-    # redisDB:
-    #   image: redis:8.0.1-alpine
-    #   container_name: leetboard-redis
-    #   ports:
-    #   - 6379:${REDIS_PORT}
-    #   command: sh -c "redis-server --requirepass \"$REDIS_PASS\"" # to set password
+       - SESSION_NAME=${SESSION_NAME}
+       - SESSION_DURATION=${SESSION_DURATION}
+       
+       - DB_HOST=${DB_HOST}
+       - DB_PORT=${DB_PORT:-5432}
+       - DB_USER=${DB_USER}
+       - DB_PASSWORD=${DB_PASSWORD}
+       - DB_NAME=${DB_NAME}
+       - DB_SSLMODE=${DB_SSLMODE}
+
+       - S3_ENDPOINT=${S3_ENDPOINT}
+       - S3_ROOT_USER=${S3_ROOT_USER}
+       - S3_ROOT_PASSWORD=${S3_ROOT_PASSWORD}
+       - S3_REGION=${S3_REGION}
+       - S3_SECURE=${S3_SECURE}
+       - S3_BUCKETNAME_POST=${S3_BUCKETNAME_POST}
+       - S3_BUCKETNAME_COMMENT=${S3_BUCKETNAME_COMMENT}
+       - S3_BUCKETNAME_AVATAR=${S3_BUCKETNAME_AVATAR}
+      depends_on:
+        minio:
+          condition: service_started
+        redisDB:
+          condition: service_started
+        db:
+          condition: service_healthy
+    redisDB:
+      image: redis:8.0.1-alpine
+      container_name: leetboard-redis
+      ports:
+      - "${REDIS_PORT}:6379"
+      command: sh -c "redis-server --requirepass \"$REDIS_PASS\"" # to set password
     minio:
       image: minio/minio
       container_name: leetboard-minio
@@ -28,9 +49,24 @@ services:
         MINIO_ROOT_USER: ${S3_ROOT_USER}
         MINIO_ROOT_PASSWORD: ${S3_ROOT_PASSWORD}
       command: server /data --console-address ":9001"
+    db:
+      image: postgres:alpine
+      environment:
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        POSTGRES_DB: ${DB_NAME}
+      volumes:
+        - ./internal/adapters/driven/postgres/migration/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+        interval: 3s
+        timeout: 5s
+        retries: 10 # Если база данных заработает после всех retries, контейнер не вернется в healthy автоматически!
+
       # volumes:
-        # - ./minio/data:/data   # ⬅ сохраняем в ./data локально
-        # - ./minio/certs:/root/.minio/certs 
+      #   - ./minio/data:/data   # ⬅ сохраняем в ./data локально
+      #   - ./minio/certs:/root/.minio/certs 
 
 # volumes:
 #   minio_data: 

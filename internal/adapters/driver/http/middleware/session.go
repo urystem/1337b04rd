@@ -1,10 +1,9 @@
 package middleware
 
 import (
+	"context"
 	"errors"
 	"net/http"
-
-	"1337b04rd/pkg/contextkeys"
 )
 
 func (s *session) CheckOrSetSession(next http.Handler) http.Handler {
@@ -26,7 +25,7 @@ func (s *session) CheckOrSetSession(next http.Handler) http.Handler {
 				Secure:   true,
 				SameSite: http.SameSiteLaxMode,
 			})
-			ctx = contextkeys.NewContext(ctx, ses)
+			ctx = context.WithValue(ctx, s.sessKey, ses)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		}
 
@@ -41,7 +40,7 @@ func (s *session) CheckOrSetSession(next http.Handler) http.Handler {
 		}
 		ses := s.ser.GetSession(ctx, cookie.Value)
 		if ses != nil {
-			ctx = contextkeys.NewContext(ctx, ses)
+			ctx = context.WithValue(ctx, s.sessKey, ses)
 			next.ServeHTTP(w, r.WithContext(ctx))
 
 		} else {

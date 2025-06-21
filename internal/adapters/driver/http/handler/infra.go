@@ -3,9 +3,10 @@ package handler
 import "1337b04rd/internal/ports/inbound"
 
 type handler struct {
-	use inbound.Usecase
+	middleware inbound.MiddlewareSessionContext
+	use        inbound.UseCase
 }
 
-func InitHandler(use inbound.Usecase) inbound.HandlerInter {
-	return &handler{use}
+func InitHandler(middleware inbound.MiddlewareSessionContext, use inbound.UseCase) inbound.HandlerInter {
+	return &handler{middleware, use}
 }

@@ -2,17 +2,18 @@ package rickAndMorty
 
 import (
 	"context"
-	"errors"
+	"sync"
 
 	"1337b04rd/internal/domain"
 	"1337b04rd/internal/ports/inbound"
 	"1337b04rd/internal/ports/outbound"
-	myerrors "1337b04rd/pkg/myErrors"
 )
 
 type rick struct {
 	rickApi outbound.RickAndMortyApi
 	redis   outbound.RickAndMortyRedisInter
+	mutex   sync.Mutex
+	count   int
 }
 
 func InitRickAndMortyRedis(api outbound.RickAndMortyApi, redis outbound.RickAndMortyRedisInter) inbound.UseCaseRickAndMorty {
@@ -20,27 +21,21 @@ func InitRickAndMortyRedis(api outbound.RickAndMortyApi, redis outbound.RickAndM
 }
 
 func (rick *rick) GetRandomCharacterAndDel(ctx context.Context) (*domain.Character, error) {
-	out, err := rick.redis.GetAndDelRandomCharacter(ctx)
-	if err == nil {
-		return out, nil
-	} else if !errors.Is(err, myerrors.ErrRickSoldOut) {
-		return nil, err
-	}
-
-	err = rick.setCharacters(ctx)
-	if err != nil {
-		return nil, err
-	}
+	rick.mutex.Lock()
+	defer rick.unlockMutexAndCheck(ctx)
 	return rick.redis.GetAndDelRandomCharacter(ctx)
 }
 
-func (rick *rick) GET() {
-}
-
-func (rick *rick) GetRandomCharacterAndDel3(ctx context.Context) {
+func (rick *rick) unlockMutexAndCheck(ctx context.Context) {
+	if rick.count--; rick.count == 0 {
+		go rick.setCharacters(ctx)
+	} else {
+		rick.mutex.Unlock()
+	}
 }
 
 func (rick *rick) setCharacters(ctx context.Context) error {
+	defer rick.mutex.Unlock()
 	for page := 1; ; page++ {
 		characters, err := rick.rickApi.GetCharacters(ctx, page)
 		if err != nil {
@@ -54,5 +49,6 @@ func (rick *rick) setCharacters(ctx context.Context) error {
 				return err
 			}
 		}
+		rick.count += len(characters)
 	}
 }

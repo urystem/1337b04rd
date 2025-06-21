@@ -3,29 +3,29 @@
 --  SELECT uuid_generate_v4();
 
 CREATE TABLE IF NOT EXISTS users (
-  session_id uuid UNIQUE,
+  session_id UUID PRIMARY KEY /*UNIQUE*/,
   name VARCHAR(150)  NOT NULL,
   avatar_url TEXT --will be null if it is in ricky and morty
 );
 
 CREATE TABLE IF NOT EXISTS posts (
-  post_id SERIAL PRIMARY KEY,
-  user_id uuid REFERENCES users(session_id),
+  post_id GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  user_id UUID REFERENCES users(session_id) NOT NULL,
   title VARCHAR(150)  NOT NULL,
   post_content TEXT,
-  -- has_image BOOLEAN,
-  post_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  has_image BOOLEAN,
+  post_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 
 CREATE TABLE IF NOT EXISTS comments (
-  comment_id SERIAL PRIMARY KEY,
-  post_id INT REFERENCES posts(post_id) ON DELETE CASCADE,
-  user_id uuid REFERENCES users(session_id) ON DELETE CASCADE,
+  comment_id GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  post_id INT REFERENCES posts(post_id) ON DELETE CASCADE NOT NULL,
+  user_id uuid REFERENCES users(session_id) ON DELETE CASCADE NOT NULL,
   comment_content TEXT,
-  parent_comment_id INT REFERENCES comments(comment_id) ON DELETE CASCADE,--
-  -- has_image BOOLEAN,
-  comment_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  parent_comment_id INT REFERENCES comments(comment_id) ON DELETE CASCADE,--DEFAULT NULL
+  has_image BOOLEAN,
+  comment_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- CREATE TABLE IF NOT EXISTS subcomments (

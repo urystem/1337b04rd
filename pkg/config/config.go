@@ -16,10 +16,11 @@ type config struct {
 
 func Load() inbound.Config {
 	conf := &config{}
-	// conf.db = conf.initDBConfig()
+	conf.db = conf.initDBConfig()
 	conf.session = conf.initSessionConf()
 	conf.server = conf.initServerCfg()
 	conf.redis = conf.initRedisConf()
+	conf.s3 = conf.initMinio()
 	return conf
 }
 
@@ -40,5 +41,9 @@ func (conf *config) GetRedisConfig() inbound.RedisConfig {
 }
 
 func (cfg *config) GetMinioCfg() inbound.MinioCfg {
+	return &cfg.s3
+}
+
+func (cfg *config) GetMinIoConfig() inbound.MinioCfg {
 	return &cfg.s3
 }

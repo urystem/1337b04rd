@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"1337b04rd/internal/ports/inbound"
+	"1337b04rd/internal/ports/outbound"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -13,10 +14,10 @@ type minIo struct {
 	client     *minio.Client
 	postBuc    string
 	commentBuc string
-	// need time
+	// avatarBuc  string
 }
 
-func InitMinio(ctx context.Context, cfg inbound.MinioCfg) (any, error) {
+func InitMinio(ctx context.Context, cfg inbound.MinioCfg) (outbound.MinioInter, error) {
 	// // Инициализация клиента
 	endpoint := cfg.GetEndpoint()
 	accessKey := cfg.GetAccessKey()
@@ -43,10 +44,17 @@ func InitMinio(ctx context.Context, cfg inbound.MinioCfg) (any, error) {
 		return nil, err
 	}
 
+	// avaBucName := cfg.GetAvatarBucketName()
+	// err = createBucket(ctx, minioClient, avaBucName)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	return &minIo{
 		client:     minioClient,
 		postBuc:    postBucName,
 		commentBuc: commentBucName,
+		// avatarBuc:  avaBucName,
 	}, nil
 }
 

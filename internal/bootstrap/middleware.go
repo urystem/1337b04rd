@@ -2,18 +2,17 @@ package bootstrap
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"1337b04rd/internal/adapters/driven/redis"
 	rickandmorty "1337b04rd/internal/adapters/driven/rickApi"
 	"1337b04rd/internal/adapters/driver/http/middleware"
 	"1337b04rd/internal/ports/inbound"
-	rickCharacter "1337b04rd/internal/service/rickCharacter"
-	"1337b04rd/internal/service/session"
+	rickCharacter "1337b04rd/internal/service/session/rickdal"
+	session "1337b04rd/internal/service/session/sessionGenerator"
 )
 
-func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConfig, redisCfg inbound.RedisConfig) (inbound.MiddleWareInter, error) {
+func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConfig, redisCfg inbound.RedisConfig) (inbound.SessionMiddleware, error) {
 	rickRedis, err := redis.InitRickRedis(ctx, redisCfg)
 	if err != nil {
 		return nil, err
@@ -30,7 +29,7 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 
 	// init rick service (first layer)
 	rickService := rickCharacter.InitRickAndMortyRedis(rickApi, rickRedis)
-	
+
 	sessionRedis, err := redis.InitSessionRedis(ctx, redisCfg, sessionCfg.GetDuration())
 	if err != nil {
 		return nil, err
@@ -44,7 +43,7 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 
 	// init rick service (second layer)
 	sessionService := session.InitSession(sessionRedis, rickService)
-	fmt.Println(sessionService.NewSession(ctx))
+	// fmt.Println(sessionService.NewSession(ctx))
 	sessionMiddleware := middleware.InitSession(sessionCfg, sessionService)
 
 	return sessionMiddleware, nil

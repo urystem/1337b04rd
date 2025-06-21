@@ -7,7 +7,11 @@ import (
 )
 
 type PostGres interface {
-	GetPosts(context.Context) ([]domain.Post, error)
+	PgxPost
 	CloseDB()
 	// CreateComment() error
+}
+
+type PgxPost interface {
+	GetPosts(context.Context) ([]domain.Post, error)
 }
