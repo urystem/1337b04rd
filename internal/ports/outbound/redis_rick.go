@@ -9,5 +9,5 @@ import (
 type RickAndMortyRedisInter interface {
 	SetCharacter(ctx context.Context, character *domain.Character) error
 	GetAndDelRandomCharacter(ctx context.Context) (*domain.Character, error)
-	Close() error
+	CloseRedis() error
 }

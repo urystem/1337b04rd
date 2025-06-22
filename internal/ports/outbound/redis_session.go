@@ -11,5 +11,5 @@ import (
 type SessionRedisInter interface {
 	GetUserBySession(ctx context.Context, session uuid.UUID) (*domain.Session, error)
 	SetSession(ctx context.Context, session *domain.Session) error
-	Close() error
+	CloseRedis() error
 }

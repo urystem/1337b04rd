@@ -21,7 +21,7 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 	app.wg.Add(1)
 	app.srv.RegisterOnShutDown(func() {
 		defer app.wg.Done()
-		rickRedis.Close()
+		rickRedis.CloseRedis()
 	})
 
 	// init rickandmorty api
@@ -38,7 +38,7 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 	app.wg.Add(1)
 	app.srv.RegisterOnShutDown(func() {
 		defer app.wg.Done()
-		sessionRedis.Close()
+		sessionRedis.CloseRedis()
 	})
 
 	// init rick service (second layer)

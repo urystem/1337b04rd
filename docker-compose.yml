@@ -1,63 +1,78 @@
 services:
     app:
       build: .
-      container_name: leetboard
+      ports:
+      - ${HOST_PORT:-8080}:${SERVER_PORT:-8080}
+      container_name: leetboard-app
       environment:
-       - SERVER_PORT=${SERVER_PORT}
-
-       - REDIS_PORT=${REDIS_PORT}
-       - REDIS_PASS=${REDIS_PASS}
-
-       - SESSION_NAME=${SESSION_NAME}
-       - SESSION_DURATION=${SESSION_DURATION}
+        SERVER_PORT: ${SERVER_PORT:-8080}
+        REDIS_PORT: ${REDIS_PORT:-6379}
+        REDIS_PASS: ${REDIS_PASS:-mypassword}
+        SESSION_NAME: ${SESSION_NAME:-sessionID}
+        SESSION_DURATION: ${SESSION_DURATION:-7}
        
-       - DB_HOST=${DB_HOST}
-       - DB_PORT=${DB_PORT:-5432}
-       - DB_USER=${DB_USER}
-       - DB_PASSWORD=${DB_PASSWORD}
-       - DB_NAME=${DB_NAME}
-       - DB_SSLMODE=${DB_SSLMODE}
+        DB_HOST: ${DB_HOST:-leetboardDB}
+        DB_PORT: ${DB_PORT:-5432}
+        DB_USER: ${DB_USER:-ukabdoll}
+        DB_PASSWORD: ${DB_PASSWORD:-07654321}
+        DB_NAME: ${DB_NAME:-1337b04rd}
+        DB_SSLMODE: ${DB_SSLMODE:-disable}
 
-       - S3_ENDPOINT=${S3_ENDPOINT}
-       - S3_ROOT_USER=${S3_ROOT_USER}
-       - S3_ROOT_PASSWORD=${S3_ROOT_PASSWORD}
-       - S3_REGION=${S3_REGION}
-       - S3_SECURE=${S3_SECURE}
-       - S3_BUCKETNAME_POST=${S3_BUCKETNAME_POST}
-       - S3_BUCKETNAME_COMMENT=${S3_BUCKETNAME_COMMENT}
-       - S3_BUCKETNAME_AVATAR=${S3_BUCKETNAME_AVATAR}
+        S3_ENDPOINT: ${S3_ENDPOINT:-"minio:9000"} #for unlocal
+      #   S3_ENDPOINT: "${S3_ENDPOINT}:${MINIO_PORT}" #істемейт никак
+        S3_ROOT_USER: ${S3_ROOT_USER:-leetboard}
+        S3_ROOT_PASSWORD: ${S3_ROOT_PASSWORD:-mySecret}
+        S3_REGION: ${S3_REGION:-"us-east-1"}
+        S3_SECURE: ${S3_SECURE:-false}
+        S3_BUCKETNAME_POST: ${S3_BUCKETNAME_POST:-myposts}
+        S3_BUCKETNAME_COMMENT: ${S3_BUCKETNAME_COMMENT:-mycomments}
+      #  - S3_BUCKETNAME_AVATAR=${S3_BUCKETNAME_AVATAR}
       depends_on:
         minio:
-          condition: service_started
+          # condition: service_started
+          condition: service_healthy
         redisDB:
-          condition: service_started
+          condition: service_healthy
+          # condition: service_started
         db:
           condition: service_healthy
     redisDB:
       image: redis:8.0.1-alpine
       container_name: leetboard-redis
       ports:
-      - "${REDIS_PORT}:6379"
+      - "${REDIS_PORT:-6379}:6379"
       command: sh -c "redis-server --requirepass \"$REDIS_PASS\"" # to set password
+      healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 3s
+        timeout: 3s
+        retries: 5
     minio:
       image: minio/minio
-      container_name: leetboard-minio
+      container_name: leetboard_minio
       ports:
-        - 9002:9000   # S3 API
-        - 9001:9001   # Web-интерфейс
+        - ${MINIO_PORT:-9000}:9000   # S3 API default 9000
+        - ${MINIO_CONSOLE_PORT:-9001}:9001   # Web-интерфейс default 9001
       environment:
-        MINIO_ROOT_USER: ${S3_ROOT_USER}
-        MINIO_ROOT_PASSWORD: ${S3_ROOT_PASSWORD}
+        MINIO_ROOT_USER: ${S3_ROOT_USER:-leetboard}
+        MINIO_ROOT_PASSWORD: ${S3_ROOT_PASSWORD:-mySecret}
       command: server /data --console-address ":9001"
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+        interval: 5s
+        timeout: 3s
+        retries: 5
     db:
       image: postgres:alpine
+      container_name: leetboard_db
+      ports:
+       - ${DB_PORT:-5432}:5432
       environment:
-        POSTGRES_USER: ${DB_USER}
-        POSTGRES_PASSWORD: ${DB_PASSWORD}
-        POSTGRES_DB: ${DB_NAME}
+        POSTGRES_USER: ${DB_USER:-ukabdoll}
+        POSTGRES_PASSWORD: ${DB_PASSWORD:-07654321}
+        POSTGRES_DB: ${DB_NAME:-1337b04rd}
       volumes:
         - ./internal/adapters/driven/postgres/migration/init.sql:/docker-entrypoint-initdb.d/init.sql
-
       healthcheck:
         test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
         interval: 3s

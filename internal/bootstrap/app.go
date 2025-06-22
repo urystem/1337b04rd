@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"sync"
 
 	"1337b04rd/internal/adapters/driver/http/handler"
@@ -61,5 +62,6 @@ func (app *myApp) Shutdown(ctx context.Context) error {
 }
 
 func (app *myApp) Run() error {
+	slog.Info("server starting")
 	return app.srv.ListenServe()
 }

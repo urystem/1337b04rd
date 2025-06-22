@@ -1,8 +1,6 @@
 package inbound
 
-import (
-	"context"
-)
+import "context"
 
 type AppInter interface {
 	Run() error

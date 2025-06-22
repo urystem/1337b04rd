@@ -13,5 +13,6 @@ FROM alpine
 WORKDIR /app
 
 COPY --from=builder /app/1337b04rd .
+COPY --from=builder /app/web ./web
 
 ENTRYPOINT [ "./1337b04rd" ]

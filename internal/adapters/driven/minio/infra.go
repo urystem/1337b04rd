@@ -33,12 +33,14 @@ func InitMinio(ctx context.Context, cfg inbound.MinioCfg) (outbound.MinioInter, 
 	}
 
 	postBucName := cfg.GetPostBucketName()
+	// fmt.Println(postBucName)
 	err = createBucket(ctx, minioClient, postBucName)
 	if err != nil {
 		return nil, err
 	}
 
 	commentBucName := cfg.GetCommentBucketName()
+	// fmt.Println(commentBucName)
 	err = createBucket(ctx, minioClient, commentBucName)
 	if err != nil {
 		return nil, err

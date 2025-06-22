@@ -16,7 +16,7 @@ type server struct {
 
 func InitServer(cfg inbound.ServerCfg) inbound.ServerInter {
 	return &server{&http.Server{
-		Addr: fmt.Sprintf("%d", cfg.GetPort()),
+		Addr: fmt.Sprintf(":%d", cfg.GetPort()),
 	}}
 }
 

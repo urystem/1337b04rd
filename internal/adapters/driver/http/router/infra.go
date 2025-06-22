@@ -13,8 +13,9 @@ import (
 
 func NewRoute(middle inbound.MiddleWareInter, hand inbound.HandlerInter) http.Handler {
 	mux := http.NewServeMux()
-	mux.Handle("GET /", middle.CheckOrSetSession(http.HandlerFunc(hand.Catalog)))
-	
+	mux.HandleFunc("GET /", hand.Catalog)
+	// mux.Handle("GET /", middle.CheckOrSetSession(http.HandlerFunc(hand.Catalog)))
+
 	// mux.Handle("GET /", r.MiddleWareInter.CheckOrSetSession(http.HandlerFunc(r.Catalog)))
 
 	// return r.MiddleWareInter.CheckOrSetSession(mux)
