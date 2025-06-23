@@ -69,12 +69,16 @@
     <section class="posts">
         <ul class="list">
             {{range .}}
-            <li class="post">
-                <a href="/post/{{.ID}}">
-                    <img src="{{.ImageLink}}" alt="no pic">
-                    <h3>{{.Title}}</h3>
-                </a>
-            </li>
+                <li class="post">
+                    <a href="/post/{{.ID}}">
+                        {{if .HasImage}}
+                            <img src="/postimage/{{.ID}}" alt="no pic">
+                        {{else}}
+                            <p>No Image</p>
+                        {{end}}
+                        <h3>{{.Title}}</h3>
+                    </a>
+                </li>
             {{end}}
         </ul>
         <!-- Posts will be dynamically inserted here -->

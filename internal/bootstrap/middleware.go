@@ -28,7 +28,10 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 	rickApi := rickandmorty.InitRickApi(10 * time.Second)
 
 	// init rick service (first layer)
-	rickService := rickCharacter.InitRickAndMortyRedis(rickApi, rickRedis)
+	rickService, err := rickCharacter.InitRickAndMortyRedis(ctx, rickApi, rickRedis)
+	if err != nil {
+		return nil, err
+	}
 
 	sessionRedis, err := redis.InitSessionRedis(ctx, redisCfg, sessionCfg.GetDuration())
 	if err != nil {

@@ -16,8 +16,10 @@ type rick struct {
 	count   int
 }
 
-func InitRickAndMortyRedis(api outbound.RickAndMortyApi, redis outbound.RickAndMortyRedisInter) inbound.UseCaseRickAndMorty {
-	return &rick{rickApi: api, redis: redis}
+func InitRickAndMortyRedis(ctx context.Context, api outbound.RickAndMortyApi, redis outbound.RickAndMortyRedisInter) (inbound.UseCaseRickAndMorty, error) {
+	myrick := &rick{rickApi: api, redis: redis}
+	myrick.mutex.Lock()
+	return myrick, myrick.setCharacters(ctx)
 }
 
 func (rick *rick) GetRandomCharacterAndDel(ctx context.Context) (*domain.Character, error) {

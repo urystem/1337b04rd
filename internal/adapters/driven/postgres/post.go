@@ -7,7 +7,7 @@ import (
 	"1337b04rd/internal/domain"
 )
 
-func (db *poolDB) GetPosts(ctx context.Context) ([]domain.Post, error) {
+func (db *poolDB) GetPosts(ctx context.Context) ([]domain.PostNonContent, error) {
 	const query string = `
 	SELECT post_id, title, has_image
 		FROM posts
@@ -19,17 +19,12 @@ func (db *poolDB) GetPosts(ctx context.Context) ([]domain.Post, error) {
 	}
 	defer rows.Close()
 
-	var posts []domain.Post
+	var posts []domain.PostNonContent
 	for rows.Next() {
-		var p domain.Post
-		var hasImage bool
+		var p domain.PostNonContent
 
-		if err := rows.Scan(&p.ID, &p.Title, &hasImage); err != nil {
+		if err := rows.Scan(&p.ID, &p.Title, &p.HasImage); err != nil {
 			return nil, fmt.Errorf("scan post: %w", err)
-		}
-
-		if hasImage {
-			p.ImageLink = "1"
 		}
 
 		posts = append(posts, p)

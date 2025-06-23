@@ -13,5 +13,5 @@ type PostGres interface {
 }
 
 type PgxPost interface {
-	GetPosts(context.Context) ([]domain.Post, error)
+	GetPosts(context.Context) ([]domain.PostNonContent, error)
 }

@@ -37,7 +37,8 @@ services:
         db:
           condition: service_healthy
     redisDB:
-      image: redis:8.0.1-alpine
+      # image: redis:8.0.1-alpine
+      image: redis:alpine
       container_name: leetboard-redis
       ports:
       - "${REDIS_PORT:-6379}:6379"

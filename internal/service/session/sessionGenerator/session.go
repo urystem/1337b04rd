@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"log/slog"
 
 	"1337b04rd/internal/domain"
 	"1337b04rd/internal/ports/inbound"
@@ -22,6 +23,7 @@ func InitSession(sessinoRedis outbound.SessionRedisInter, morty inbound.UseCaseR
 func (s *session) NewSession(ctx context.Context) *domain.Session {
 	newCharacter, err := s.morty.GetRandomCharacterAndDel(ctx)
 	if err != nil {
+		slog.Error(err.Error())
 		return nil
 	}
 

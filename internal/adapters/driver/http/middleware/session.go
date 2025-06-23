@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net/http"
 )
 
@@ -13,7 +14,7 @@ func (s *session) CheckOrSetSession(next http.Handler) http.Handler {
 		createNew := func() {
 			ses := s.ser.NewSession(ctx)
 			if ses == nil {
-				//
+				slog.Error("ses is nil")
 				return
 			}
 			http.SetCookie(w, &http.Cookie{

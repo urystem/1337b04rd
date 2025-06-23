@@ -2,25 +2,14 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 
 	"1337b04rd/internal/domain"
 )
 
-func (u *usecase) ListOfPosts(ctx context.Context) ([]domain.Post, error) {
-	posts, err := u.db.GetPosts(ctx)
-	if err != nil {
-		return nil, err
-	}
-	for i, post := range posts {
-		if post.ImageLink != "" {
-			url, err := u.s3.GetPost(ctx, fmt.Sprintf("%d", post.ID))
-			if err != nil {
-				return nil, err
-			}
-			posts[i].ImageLink = url
-		}
-	}
-	return posts, nil
+func (u *usecase) ListOfPosts(ctx context.Context) ([]domain.PostNonContent, error) {
+	return u.db.GetPosts(ctx)
 }
 
+func (u *usecase) GetPostImage(ctx context.Context, objName string) (*domain.OutputObject, error) {
+	return u.s3.GetPost(ctx, objName)
+}

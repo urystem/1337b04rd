@@ -1,7 +1,7 @@
 package domain
 
-type Post struct {
-	ID        int
-	Title     string
-	ImageLink string
+type PostNonContent struct {
+	ID       int
+	Title    string
+	HasImage bool
 }

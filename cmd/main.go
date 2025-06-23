@@ -44,5 +44,4 @@ func main() {
 		slog.Error("❌", " Server forced to shutdown: %v", err)
 	}
 	slog.Info("✅ Server exited properly")
-	// time.Sleep(10 * time.Second)
 }

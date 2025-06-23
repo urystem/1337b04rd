@@ -12,7 +12,8 @@ type UseCase interface {
 }
 
 type PostUsecase interface {
-	ListOfPosts(context.Context) ([]domain.Post, error)
+	ListOfPosts(context.Context) ([]domain.PostNonContent, error)
+	GetPostImage(ctx context.Context, objName string) (*domain.OutputObject, error)
 }
 
 type CommentUsecase interface {

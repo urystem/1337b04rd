@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"errors"
 	"strconv"
 
 	"1337b04rd/internal/domain"
@@ -40,8 +41,11 @@ func (rick *rickAndMorty) SetCharacter(ctx context.Context, character *domain.Ch
 
 func (rick *rickAndMorty) GetAndDelRandomCharacter(ctx context.Context) (*domain.Character, error) {
 	key, err := rick.RandomKey(ctx).Result()
-	if err == redis.Nil {
-		return nil, myerrors.ErrRickSoldOut
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return nil, myerrors.ErrRickSoldOut
+		}
+		return nil, err
 	}
 
 	b, err := rick.Get(ctx, key).Bytes()
@@ -56,7 +60,7 @@ func (rick *rickAndMorty) GetAndDelRandomCharacter(ctx context.Context) (*domain
 		return nil, err
 	}
 
-	rick.Del(ctx, key)
+	go rick.Del(ctx, key)
 
 	return character, nil
 }

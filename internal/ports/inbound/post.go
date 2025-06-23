@@ -3,6 +3,6 @@ package inbound
 import "1337b04rd/internal/domain"
 
 type PostInter interface {
-	GetAllPosts() ([]domain.Post, error)
-	SavePost(*domain.Post) error
+	GetAllPosts() ([]domain.PostNonContent, error)
+	SavePost(*domain.PostNonContent) error
 }
