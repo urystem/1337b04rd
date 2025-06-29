@@ -44,7 +44,10 @@ func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) 
 	}
 
 	// init handler
-	handler := handler.InitHandler(middle, useCase)
+	handler, err := handler.InitHandler(middle, useCase)
+	if err != nil {
+		return nil, errors.Join(err, app.Shutdown(ctx))
+	}
 
 	// init router
 	router := router.NewRoute(middle, handler)

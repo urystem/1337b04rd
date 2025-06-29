@@ -15,8 +15,16 @@ func (s *session) CheckOrSetSession(next http.Handler) http.Handler {
 			ses := s.ser.NewSession(ctx)
 			if ses == nil {
 				slog.Error("ses is nil")
+
+				// errPage := &domain.ErrorPageData{
+				// 	Code:    http.StatusInternalServerError,
+				// 	Message: "cannot create a new session",
+				// }
+
+				// s.errhand.RenderError(w, errPage)
 				return
 			}
+
 			http.SetCookie(w, &http.Cookie{
 				Name:     s.cookieName,
 				Value:    ses.Uuid.String(),
@@ -36,6 +44,11 @@ func (s *session) CheckOrSetSession(next http.Handler) http.Handler {
 				createNew()
 			} else {
 				http.Error(w, "server error", http.StatusInternalServerError)
+				// errPage := &domain.ErrorPageData{
+				// 	Code:    http.StatusInternalServerError,
+				// 	Message: "cannot get a cookie from brower",
+				// }
+				// s.errhand.RenderError(w, errPage)
 			}
 			return
 		}

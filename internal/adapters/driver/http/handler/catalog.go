@@ -1,39 +1,42 @@
 package handler
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 	"text/template"
+
+	"1337b04rd/internal/domain"
 )
 
 func (h *handler) Catalog(w http.ResponseWriter, r *http.Request) {
 	posts, err := h.use.ListOfPosts(r.Context())
 	if err != nil {
-		// http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		slog.Error(err.Error())
-		http.Error(w, "Error loading posts", http.StatusInternalServerError)
+
+		errData := &domain.ErrorPageData{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+
+		h.renderError(w, errData)
 		return
 	}
 
-	tmpl, err := template.ParseFiles("web/templates/catalog.html")
+	err = h.templates.ExecuteTemplate(w, "catalog.html", posts)
+	template.ParseFiles()
 	if err != nil {
 		slog.Error(err.Error())
-		http.Error(w, "Error parsing template", http.StatusInternalServerError)
-		return
-	}
-
-	err = tmpl.Execute(w, posts)
-	if err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Execution error", http.StatusInternalServerError)
+		errData := &domain.ErrorPageData{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		h.renderError(w, errData)
 	}
 }
 
-func (h *handler) ServeImage(w http.ResponseWriter, r *http.Request) {
+func (h *handler) ServePostImage(w http.ResponseWriter, r *http.Request) {
 	// Получаем имя файла из URL
 	imageName := r.PathValue("image")
-	fmt.Println("serveimage", imageName)
 	if imageName == "" {
 		http.Error(w, "missing image name", http.StatusBadRequest)
 		return
@@ -42,7 +45,7 @@ func (h *handler) ServeImage(w http.ResponseWriter, r *http.Request) {
 	// Получаем объект из MinIO
 	obj, err := h.use.GetPostImage(r.Context(), imageName)
 	if err != nil {
-		slog.Error("get object:", err)
+		slog.Error("", "get object:", err)
 		http.Error(w, "file not found", http.StatusNotFound)
 		return
 	}

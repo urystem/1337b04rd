@@ -14,7 +14,8 @@ type session struct {
 	cookieName string
 	ttl        time.Duration
 	ser        inbound.SessionInter
-	sessKey    sessionKey
+	// errhand    inbound.ErrorHandler
+	sessKey sessionKey
 }
 
 func InitSession(conf inbound.SessionConfig, ser inbound.SessionInter) inbound.SessionMiddleware {

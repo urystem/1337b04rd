@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS posts (
   post_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id UUID REFERENCES users(session_id) NOT NULL,
+  name VARCHAR(150)  NOT NULL,
   title VARCHAR(150)  NOT NULL,
   post_content TEXT,
   has_image BOOLEAN,
