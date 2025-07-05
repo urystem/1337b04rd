@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS posts (
   post_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id UUID REFERENCES users(session_id) NOT NULL,
-  name VARCHAR(150)  NOT NULL,
+  author VARCHAR(150)  NOT NULL,
   title VARCHAR(150)  NOT NULL,
   post_content TEXT,
   has_image BOOLEAN,
@@ -34,9 +34,9 @@ INSERT INTO users (session_id, name, avatar_url) VALUES
   ('22222222-2222-2222-2222-222222222222', 'Morty Smith', 'https://rickandmortyapi.com/api/character/avatar/2.jpeg'),
   ('33333333-3333-3333-3333-333333333333', 'Summer Smith', 'https://rickandmortyapi.com/api/character/avatar/1.jpeg');
 
-INSERT INTO posts (user_id, title, post_content, has_image) VALUES
-  ('11111111-1111-1111-1111-111111111111', 'Wubba Lubba Dub Dub', 'Rick''s famous quote', FALSE),
-  ('22222222-2222-2222-2222-222222222222', 'First Adventure', 'That was crazy...', TRUE);
+INSERT INTO posts (user_id, author,title, post_content, has_image) VALUES
+  ('11111111-1111-1111-1111-111111111111','doldan', 'Wubba Lubba Dub Dub', 'Rick''s famous quote', FALSE),
+  ('22222222-2222-2222-2222-222222222222', 'shakrt','First Adventure', 'That was crazy...', TRUE);
 
 -- Комментарии без родителя
 INSERT INTO comments (post_id, user_id, comment_content, has_image) VALUES

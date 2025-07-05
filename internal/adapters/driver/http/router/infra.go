@@ -17,7 +17,7 @@ func NewRoute(middle inbound.MiddleWareInter, hand inbound.HandlerInter) http.Ha
 	mux.Handle("GET /", middle.CheckOrSetSession(http.HandlerFunc(hand.Catalog)))
 	mux.HandleFunc("GET /postimage/{image}", hand.ServePostImage)
 	mux.HandleFunc("GET /create-post-page", hand.CreatePostPage)
-	mux.HandleFunc("GET /submit-post", hand.SubmitPost)
+	mux.HandleFunc("POST /submit-post", hand.SubmitPost)
 	// mux.Handle("GET /", r.MiddleWareInter.CheckOrSetSession(http.HandlerFunc(r.Catalog)))
 
 	// return r.MiddleWareInter.CheckOrSetSession(mux)

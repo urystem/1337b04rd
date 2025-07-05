@@ -13,5 +13,7 @@ type PostGres interface {
 }
 
 type PgxPost interface {
-	GetPosts(context.Context) ([]domain.PostNonContent, error)
+	SelectPosts(context.Context) ([]domain.PostNonContent, error)
+	InsertPost(ctx context.Context, post *domain.InsertPost) (uint64, error)
+	DeletePost(ctx context.Context, id uint64) error
 }

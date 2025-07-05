@@ -1,16 +1,26 @@
 package domain
 
-import "mime/multipart"
+import "github.com/google/uuid"
 
 type PostNonContent struct {
-	ID       int
+	ID       uint64
 	Title    string
 	HasImage bool
 }
 
-type InputPost struct {
+type BasicInputPost struct {
+	Uuid    uuid.UUID
 	Name    string
 	Subject string
 	Content string
-	File    multipart.File
+}
+
+type InsertPost struct {
+	BasicInputPost
+	HasImage bool
+}
+
+type Form struct {
+	BasicInputPost
+	File *InPutObject
 }

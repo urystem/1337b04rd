@@ -3,7 +3,6 @@ package handler
 import (
 	"log/slog"
 	"net/http"
-	"text/template"
 
 	"1337b04rd/internal/domain"
 )
@@ -23,7 +22,6 @@ func (h *handler) Catalog(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = h.templates.ExecuteTemplate(w, "catalog.html", posts)
-	template.ParseFiles()
 	if err != nil {
 		slog.Error(err.Error())
 		errData := &domain.ErrorPageData{

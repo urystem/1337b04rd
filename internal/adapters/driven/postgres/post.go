@@ -7,7 +7,7 @@ import (
 	"1337b04rd/internal/domain"
 )
 
-func (db *poolDB) GetPosts(ctx context.Context) ([]domain.PostNonContent, error) {
+func (db *poolDB) SelectPosts(ctx context.Context) ([]domain.PostNonContent, error) {
 	const query string = `
 	SELECT post_id, title, has_image
 		FROM posts
@@ -34,4 +34,37 @@ func (db *poolDB) GetPosts(ctx context.Context) ([]domain.PostNonContent, error)
 		return nil, fmt.Errorf("rows err: %w", err)
 	}
 	return posts, nil
+}
+
+func (db *poolDB) InsertPost(ctx context.Context, post *domain.InsertPost) (uint64, error) {
+	const query string = `
+		INSERT INTO posts (user_id, author, title, post_content, has_image)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING post_id;`
+	var postID uint64
+	err := db.Pool.QueryRow(ctx, query,
+		post.Uuid,
+		post.Name,
+		post.Subject,
+		post.Content,
+		post.HasImage).Scan(&postID)
+
+	return postID, err
+}
+
+func (db *poolDB) DeletePost(ctx context.Context, id uint64) error {
+	const query string = `DELETE FROM posts WHERE post_id = $1`
+
+	// Выполняем запрос
+	ct, err := db.Pool.Exec(ctx, query, id)
+	if err != nil {
+		return fmt.Errorf("delete post: %w", err)
+	}
+
+	// Проверим, была ли строка удалена
+	if ct.RowsAffected() == 0 {
+		return fmt.Errorf("delete post: no post with id %d", id)
+	}
+
+	return nil
 }
