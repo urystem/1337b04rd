@@ -7,10 +7,11 @@ import (
 	"1337b04rd/internal/domain"
 )
 
-func (db *poolDB) SelectPosts(ctx context.Context) ([]domain.PostNonContent, error) {
+func (db *poolDB) SelectActivePosts(ctx context.Context) ([]domain.PostNonContent, error) {
 	const query string = `
 	SELECT post_id, title, has_image
 		FROM posts
+		WHERE archived = FALSE
 		ORDER BY post_time DESC`
 
 	rows, err := db.Query(ctx, query)
@@ -67,4 +68,34 @@ func (db *poolDB) DeletePost(ctx context.Context, id uint64) error {
 	}
 
 	return nil
+}
+
+func (db *poolDB) SelectArchivePosts(ctx context.Context) ([]domain.PostNonContent, error) {
+	const query string = `
+	SELECT post_id, title, has_image
+		FROM posts
+		WHERE archived = TRUE
+		ORDER BY post_time DESC`
+
+	rows, err := db.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("query posts: %w", err)
+	}
+	defer rows.Close()
+
+	var posts []domain.PostNonContent
+	for rows.Next() {
+		var p domain.PostNonContent
+
+		if err := rows.Scan(&p.ID, &p.Title, &p.HasImage); err != nil {
+			return nil, fmt.Errorf("scan post: %w", err)
+		}
+
+		posts = append(posts, p)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows err: %w", err)
+	}
+	return posts, nil
 }

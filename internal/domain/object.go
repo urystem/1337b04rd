@@ -6,7 +6,7 @@ import (
 )
 
 type InPutObject struct {
-	io.ReadCloser
+	io.Reader
 	ObjName string
 	ConType string
 	Size    int64

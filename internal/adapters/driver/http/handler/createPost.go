@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -22,7 +21,7 @@ func (h *handler) SubmitPost(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	sess, x := h.middleware.FromContext(ctx)
 	if !x {
-		fmt.Println(x)
+		http.Error(w, "error middleware", http.StatusUnauthorized)
 		return
 	}
 	form := &domain.Form{
@@ -36,10 +35,10 @@ func (h *handler) SubmitPost(w http.ResponseWriter, r *http.Request) {
 	form.Content = r.FormValue("content")
 
 	file, header, err := r.FormFile("file")
-
 	if err == nil {
+		defer file.Close()
 		form.File = new(domain.InPutObject)
-		form.File.ReadCloser = file
+		form.File.Reader = file
 		form.File.ConType = header.Header.Get("Content-Type")
 		form.File.Size = header.Size
 	}
@@ -56,6 +55,13 @@ func (h *handler) SubmitPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !sess.Saved {
+		err := h.use.AddUserToDB(ctx, sess)
+		if err != nil {
+			slog.Error(err.Error())
+			return
+		}
+	}
 	err = h.use.CreatePost(ctx, form)
 	if err != nil {
 		errData := &domain.ErrorPageData{
@@ -63,6 +69,7 @@ func (h *handler) SubmitPost(w http.ResponseWriter, r *http.Request) {
 			Message: err.Error(),
 		}
 		h.renderError(w, errData)
+		return
 	}
-	fmt.Println(form)
+	h.Catalog(w, r)
 }

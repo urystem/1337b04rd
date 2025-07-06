@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"1337b04rd/internal/adapters/driver/http/handler"
+	"1337b04rd/internal/adapters/driver/http/middleware"
 	"1337b04rd/internal/adapters/driver/http/router"
 	"1337b04rd/internal/adapters/driver/http/server"
 	"1337b04rd/internal/ports/inbound"
@@ -14,8 +15,9 @@ import (
 
 // DI container
 type myApp struct {
-	srv inbound.ServerInter
-	wg  sync.WaitGroup
+	ticker inbound.Ticker
+	srv    inbound.ServerInter
+	wg     sync.WaitGroup
 }
 
 func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) {
@@ -26,22 +28,26 @@ func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) 
 	// init app
 	app := &myApp{srv: mySrv}
 
-	// init middleware to app
+	// init session and middleware
 	sessionCfg := cfg.GetSessionConfig()
 	redisCfg := cfg.GetRedisConfig()
 
-	middle, err := app.middleWare(ctx, sessionCfg, redisCfg)
+	session, err := app.initSession(ctx, sessionCfg, redisCfg)
 	if err != nil {
 		return nil, errors.Join(err, app.Shutdown(ctx))
 	}
+	middle := middleware.InitSession(sessionCfg, session)
 
 	// init service(usecase)
 	dbCfg := cfg.GetDBConfig()
 	minIoCfg := cfg.GetMinIoConfig()
-	useCase, err := app.InitService(ctx, dbCfg, minIoCfg)
+	useCase, err := app.InitService(ctx, dbCfg, minIoCfg, session)
 	if err != nil {
 		return nil, errors.Join(err, app.Shutdown(ctx))
 	}
+
+	// init ticker
+	app.ticker = useCase
 
 	// init handler
 	handler, err := handler.InitHandler(middle, useCase)
@@ -66,5 +72,6 @@ func (app *myApp) Shutdown(ctx context.Context) error {
 
 func (app *myApp) Run() error {
 	slog.Info("server starting")
+	app.initTicker()
 	return app.srv.ListenServe()
 }

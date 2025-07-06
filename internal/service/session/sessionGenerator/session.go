@@ -2,6 +2,7 @@ package session
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"1337b04rd/internal/domain"
@@ -20,6 +21,7 @@ func InitSession(sessinoRedis outbound.SessionRedisInter, morty inbound.UseCaseR
 	return &session{sessinoRedis, morty}
 }
 
+// for middleware
 func (s *session) NewSession(ctx context.Context) *domain.Session {
 	newCharacter, err := s.morty.GetRandomCharacterAndDel(ctx)
 	if err != nil {
@@ -36,6 +38,7 @@ func (s *session) NewSession(ctx context.Context) *domain.Session {
 	return newSession
 }
 
+// for middleware
 func (s *session) GetSession(ctx context.Context, id string) *domain.Session {
 	sesId, err := uuid.Parse(id)
 	if err != nil {
@@ -47,4 +50,17 @@ func (s *session) GetSession(ctx context.Context, id string) *domain.Session {
 		return nil
 	}
 	return ses
+}
+
+// for handler or service(usecase)
+func (s *session) SetSavedUUID(ctx context.Context, id uuid.UUID) error {
+	ses, err := s.sessinoRedis.GetUserBySession(ctx, id)
+	if err != nil {
+		return err
+	}
+	if ses.Saved {
+		return errors.New("already")
+	}
+	ses.Saved = true
+	return s.sessinoRedis.SetSession(ctx, ses)
 }

@@ -62,12 +62,26 @@
 
     <nav>
         <!-- Navigation links -->
-        [<a href="catalog.html">Catalog</a>] |
-        [<a href="create-post.html">Create Post</a>]
+        [<a href="/">Catalog</a>] |
+        [<a href="/create-post-page">Create Post</a>]
     </nav>
 </header>
 <main>
     <section class="post-grid" id="postGrid">
+        <ul class="list">
+            {{range .}}
+                <li class="post">
+                    <a href="/post/{{.ID}}">
+                        {{if .HasImage}}
+                            <img src="/postimage/{{.ID}}" alt="image not found">
+                        {{else}}
+                            <p>No Image</p>
+                        {{end}}
+                        <h3>{{.Title}}</h3>
+                    </a>
+                </li>
+            {{end}}
+        </ul>
         <!-- Posts will be dynamically inserted here -->
     </section>
 </main>

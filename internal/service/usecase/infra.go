@@ -6,10 +6,11 @@ import (
 )
 
 type usecase struct {
-	db outbound.PgxPost
-	s3 outbound.MinIoInterPost
+	db      outbound.PgxPost
+	s3      outbound.MinIoInterPost
+	session inbound.SessionSeviceInter
 }
 
-func InitUsecase(db outbound.PgxPost, s3 outbound.MinIoInterPost) inbound.UseCase {
-	return &usecase{db: db, s3: s3}
+func InitUsecase(db outbound.PgxPost, s3 outbound.MinIoInterPost, session inbound.SessionSeviceInter) inbound.UseCase {
+	return &usecase{db: db, s3: s3, session: session}
 }

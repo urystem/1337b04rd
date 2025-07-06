@@ -33,6 +33,7 @@ func InitSessionRedis(ctx context.Context, red inbound.RedisConfig, ttl time.Dur
 type save struct {
 	UserName  string
 	AvatarURL string
+	Saved     bool
 }
 
 // methods (adapters)
@@ -51,12 +52,12 @@ func (sr *sessionRedis) GetUserBySession(ctx context.Context, session uuid.UUID)
 		return nil, err
 	}
 
-	return &domain.Session{Uuid: session, Name: data.UserName, AvatarURL: data.AvatarURL}, nil
+	return &domain.Session{Uuid: session, Name: data.UserName, AvatarURL: data.AvatarURL, Saved: data.Saved}, nil
 }
 
 func (sr *sessionRedis) SetSession(ctx context.Context, session *domain.Session) error {
 	keyUUID := session.Uuid.String()
-	data := &save{session.Name, session.AvatarURL}
+	data := &save{session.Name, session.AvatarURL, session.Saved}
 
 	var buf bytes.Buffer
 	err := gob.NewEncoder(&buf).Encode(data)

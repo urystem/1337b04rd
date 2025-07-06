@@ -13,13 +13,14 @@ import (
 
 func NewRoute(middle inbound.MiddleWareInter, hand inbound.HandlerInter) http.Handler {
 	mux := http.NewServeMux()
-	// mux.HandleFunc("GET /", hand.Catalog)
-	mux.Handle("GET /", middle.CheckOrSetSession(http.HandlerFunc(hand.Catalog)))
+	mux.HandleFunc("GET /", hand.Catalog)
+	// mux.Handle("GET /", middle.CheckOrSetSession(http.HandlerFunc(hand.Catalog)))
 	mux.HandleFunc("GET /postimage/{image}", hand.ServePostImage)
 	mux.HandleFunc("GET /create-post-page", hand.CreatePostPage)
 	mux.HandleFunc("POST /submit-post", hand.SubmitPost)
+	mux.HandleFunc("GET /archive", hand.Archive)
 	// mux.Handle("GET /", r.MiddleWareInter.CheckOrSetSession(http.HandlerFunc(r.Catalog)))
 
-	// return r.MiddleWareInter.CheckOrSetSession(mux)
-	return mux
+	return middle.CheckOrSetSession(mux)
+	// return mux
 }

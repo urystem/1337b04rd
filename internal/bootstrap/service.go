@@ -9,7 +9,7 @@ import (
 	"1337b04rd/internal/service/usecase"
 )
 
-func (app *myApp) InitService(ctx context.Context, dbCfg inbound.DBConfig, s3Cfg inbound.MinioCfg) (inbound.UseCase, error) {
+func (app *myApp) InitService(ctx context.Context, dbCfg inbound.DBConfig, s3Cfg inbound.MinioCfg, session inbound.SessionSeviceInter) (inbound.UseCase, error) {
 	db, err := postgres.InitDB(ctx, dbCfg)
 	if err != nil {
 		return nil, err
@@ -25,5 +25,5 @@ func (app *myApp) InitService(ctx context.Context, dbCfg inbound.DBConfig, s3Cfg
 	if err != nil {
 		return nil, err
 	}
-	return usecase.InitUsecase(db, minio), nil
+	return usecase.InitUsecase(db, minio, session), nil
 }

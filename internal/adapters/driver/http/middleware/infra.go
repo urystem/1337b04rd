@@ -13,12 +13,12 @@ type sessionKey struct{}
 type session struct {
 	cookieName string
 	ttl        time.Duration
-	ser        inbound.SessionInter
+	ser        inbound.SessionMiddlewareInter
 	// errhand    inbound.ErrorHandler
 	sessKey sessionKey
 }
 
-func InitSession(conf inbound.SessionConfig, ser inbound.SessionInter) inbound.SessionMiddleware {
+func InitSession(conf inbound.SessionConfig, ser inbound.SessionMiddlewareInter) inbound.SessionMiddleware {
 	return &session{cookieName: conf.GetCookieName(), ttl: conf.GetDuration(), ser: ser}
 }
 

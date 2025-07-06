@@ -8,8 +8,8 @@ import (
 	"1337b04rd/internal/domain"
 )
 
-func (u *usecase) ListOfPosts(ctx context.Context) ([]domain.PostNonContent, error) {
-	return u.db.SelectPosts(ctx)
+func (u *usecase) ListOfActivePosts(ctx context.Context) ([]domain.PostNonContent, error) {
+	return u.db.SelectActivePosts(ctx)
 }
 
 func (u *usecase) GetPostImage(ctx context.Context, objName string) (*domain.OutputObject, error) {
@@ -23,7 +23,7 @@ func (u *usecase) CreatePost(ctx context.Context, form *domain.Form) error {
 	insert.Subject = form.Subject
 	insert.Content = form.Content
 	insert.HasImage = form.File != nil
-	id, err := u.db.InsertPost(ctx, insert)
+	postId, err := u.db.InsertPost(ctx, insert)
 	if err != nil {
 		return err
 	}
@@ -31,10 +31,14 @@ func (u *usecase) CreatePost(ctx context.Context, form *domain.Form) error {
 		return nil
 	}
 
-	form.File.ObjName = strconv.FormatUint(id, 10)
+	form.File.ObjName = strconv.FormatUint(postId, 10)
 	err = u.s3.PutPost(ctx, form.File)
 	if err != nil {
-		return errors.Join(err, u.db.DeletePost(ctx, id))
+		return errors.Join(err, u.db.DeletePost(ctx, postId))
 	}
 	return nil
+}
+
+func (u *usecase) ListOfArchivePosts(ctx context.Context) ([]domain.PostNonContent, error) {
+	return u.db.SelectArchivePosts(ctx)
 }

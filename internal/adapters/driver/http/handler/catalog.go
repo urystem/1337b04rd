@@ -8,7 +8,7 @@ import (
 )
 
 func (h *handler) Catalog(w http.ResponseWriter, r *http.Request) {
-	posts, err := h.use.ListOfPosts(r.Context())
+	posts, err := h.use.ListOfActivePosts(r.Context())
 	if err != nil {
 		slog.Error(err.Error())
 

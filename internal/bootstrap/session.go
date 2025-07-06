@@ -6,13 +6,12 @@ import (
 
 	"1337b04rd/internal/adapters/driven/redis"
 	rickandmorty "1337b04rd/internal/adapters/driven/rickApi"
-	"1337b04rd/internal/adapters/driver/http/middleware"
 	"1337b04rd/internal/ports/inbound"
 	rickCharacter "1337b04rd/internal/service/session/rickdal"
 	session "1337b04rd/internal/service/session/sessionGenerator"
 )
 
-func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConfig, redisCfg inbound.RedisConfig) (inbound.SessionMiddleware, error) {
+func (app *myApp) initSession(ctx context.Context, sessionCfg inbound.SessionConfig, redisCfg inbound.RedisConfig) (inbound.SessionInter, error) {
 	rickRedis, err := redis.InitRickRedis(ctx, redisCfg)
 	if err != nil {
 		return nil, err
@@ -45,9 +44,8 @@ func (app *myApp) middleWare(ctx context.Context, sessionCfg inbound.SessionConf
 	})
 
 	// init rick service (second layer)
-	sessionService := session.InitSession(sessionRedis, rickService)
+	return session.InitSession(sessionRedis, rickService), nil
 	// fmt.Println(sessionService.NewSession(ctx))
-	sessionMiddleware := middleware.InitSession(sessionCfg, sessionService)
-
-	return sessionMiddleware, nil
+	// sessionMiddleware := middleware.InitSession(sessionCfg, sessionService)
+	// return sessionMiddleware, nil
 }

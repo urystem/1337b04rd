@@ -10,5 +10,5 @@ type ServerInter interface {
 	ListenServe() error
 	ShutdownGracefully(ctx context.Context) error
 	RegisterOnShutDown(f func())
-	CloseServer() error
+	// CloseServer() error
 }
