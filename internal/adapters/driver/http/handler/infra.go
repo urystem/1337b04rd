@@ -9,10 +9,10 @@ import (
 type handler struct {
 	templates  *template.Template
 	middleware inbound.MiddlewareSessionContext
-	use        inbound.UseCase
+	use        inbound.Service
 }
 
-func InitHandler(middleware inbound.MiddlewareSessionContext, use inbound.UseCase) (inbound.HandlerInter, error) {
+func InitHandler(middleware inbound.MiddlewareSessionContext, use inbound.Service) (inbound.HandlerInter, error) {
 	templates, err := template.ParseGlob("web/templates/*.html")
 	if err != nil {
 		return nil, err

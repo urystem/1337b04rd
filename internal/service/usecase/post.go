@@ -42,3 +42,19 @@ func (u *usecase) CreatePost(ctx context.Context, form *domain.Form) error {
 func (u *usecase) ListOfArchivePosts(ctx context.Context) ([]domain.PostNonContent, error) {
 	return u.db.SelectArchivePosts(ctx)
 }
+
+func (u *usecase) GetArchivePost(ctx context.Context, id uint64) (*domain.ArchivePost, error) {
+	postX, err := u.db.GetPost(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	post := &domain.Post{id, *postX}
+
+	comments, err := u.db.GetComments(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.ArchivePost{Post: *post, Comments: comments}, nil
+}

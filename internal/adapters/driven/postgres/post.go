@@ -99,3 +99,19 @@ func (db *poolDB) SelectArchivePosts(ctx context.Context) ([]domain.PostNonConte
 	}
 	return posts, nil
 }
+
+func (db *poolDB) GetPost(ctx context.Context, id uint64) (*domain.PostX, error) {
+	const query = `
+        SELECT 
+            title, post_content, has_image
+        FROM 
+            posts
+        WHERE 
+            post_id = $1`
+	postX := new(domain.PostX)
+	err := db.QueryRow(ctx, query, id).Scan(&postX.Title, &postX.Content, &postX.HasImage)
+	if err != nil {
+		return nil, err
+	}
+	return postX, nil
+}

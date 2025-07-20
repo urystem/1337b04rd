@@ -7,17 +7,19 @@ import (
 )
 
 type UseCase interface {
-	PostUsecase
+	Service
 	CommentUsecase
-	UserUseCase
 	Ticker
 }
 
-type PostUsecase interface {
+type Service interface {
 	ListOfActivePosts(context.Context) ([]domain.PostNonContent, error)
 	GetPostImage(ctx context.Context, objName string) (*domain.OutputObject, error)
 	CreatePost(ctx context.Context, form *domain.Form) error
 	ListOfArchivePosts(context.Context) ([]domain.PostNonContent, error)
+	UserUseCase
+	GetArchivePost(context.Context, uint64) (*domain.ArchivePost, error)
+	GetCommentImage(ctx context.Context, objName string) (*domain.OutputObject, error)
 }
 
 type CommentUsecase interface {

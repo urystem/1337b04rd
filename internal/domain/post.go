@@ -1,8 +1,6 @@
 package domain
 
 import (
-	"time"
-
 	"github.com/google/uuid"
 )
 
@@ -27,7 +25,7 @@ type InsertPost struct {
 	HasImage bool
 }
 
-// create-post
+// create-post (general)
 type Form struct {
 	BasicInputPost
 	File *InPutObject
@@ -35,7 +33,18 @@ type Form struct {
 
 // output
 type Post struct {
-	ID       uint64
+	ID uint64
+	PostX
+	// DataTime time.Time
+}
+type PostX struct {
 	Title    string
-	DataTime time.Time
+	Content  string
+	HasImage bool
+}
+
+// archived post
+type ArchivePost struct {
+	Post     Post
+	Comments []Comment
 }

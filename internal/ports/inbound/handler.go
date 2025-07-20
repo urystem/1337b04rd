@@ -10,6 +10,8 @@ type HandlerInter interface {
 	CreatePostPage(w http.ResponseWriter, r *http.Request)
 	SubmitPost(w http.ResponseWriter, r *http.Request)
 	Archive(w http.ResponseWriter, r *http.Request)
+	ArchivePost(w http.ResponseWriter, r *http.Request)
+	ServeCommentImage(w http.ResponseWriter, r *http.Request)
 	// CreateComment(w http.ResponseWriter, r *http.Request)
 	// ErrorHandler
 }
