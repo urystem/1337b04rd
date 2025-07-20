@@ -12,6 +12,7 @@ type HandlerInter interface {
 	Archive(w http.ResponseWriter, r *http.Request)
 	ArchivePost(w http.ResponseWriter, r *http.Request)
 	ServeCommentImage(w http.ResponseWriter, r *http.Request)
+	ActivePost(w http.ResponseWriter, r *http.Request)
 	// CreateComment(w http.ResponseWriter, r *http.Request)
 	// ErrorHandler
 }

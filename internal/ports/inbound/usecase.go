@@ -20,6 +20,7 @@ type Service interface {
 	UserUseCase
 	GetArchivePost(context.Context, uint64) (*domain.ArchivePost, error)
 	GetCommentImage(ctx context.Context, objName string) (*domain.OutputObject, error)
+	GetActivePost(context.Context, uint64) (*domain.ActivePost, error)
 }
 
 type CommentUsecase interface {

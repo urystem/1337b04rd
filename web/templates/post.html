@@ -61,12 +61,17 @@
             <img src="https://rickandmortyapi.com/api/character/avatar/1.jpeg" alt="no pic" width="50px" height="50px">
             <b>{{.UserName}}</b>
             {{.DataTime}}
-            {{.PostID}}
+            {{.ID}}
         </div>
         <div class="content">
-            <a href="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png">
+            <!-- <a href="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png">
                 <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png" alt="no pic">
-            </a>
+            </a> -->
+            {{if .Post.HasImage}}
+                <img src="/postimage/{{.ID}}" alt="Post Image">
+            {{else}}
+                <p>No Image</p>
+            {{end}}
             <div class="text">
                 <h3>{{.Title}}</h3>
                 {{.Content}}
@@ -85,12 +90,12 @@
                 <img src="{{.AvaterLink}}" alt="no pic" width="50px" height="50px">
                 <b>{{.UserName}}</b>
                 {{.DataTime}}
-                {{.CommentID}}
+                {{.ID}}
             </div>
             <div class="content">
-                <a href="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png">
-                    <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png" alt="no pic"  width="100px" height="100px">
-                </a>
+                {{if .HasImage}}
+                    <img src="/comment/{{.ID}}" alt="image not found">
+                {{end}}
                 <div class="text">
                     {{.Content}}
                 </div>

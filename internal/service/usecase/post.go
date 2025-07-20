@@ -44,17 +44,34 @@ func (u *usecase) ListOfArchivePosts(ctx context.Context) ([]domain.PostNonConte
 }
 
 func (u *usecase) GetArchivePost(ctx context.Context, id uint64) (*domain.ArchivePost, error) {
-	postX, err := u.db.GetPost(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	post := &domain.Post{id, *postX}
-
-	comments, err := u.db.GetComments(ctx, id)
+	post, comments, err := u.getPostAndComment(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	return &domain.ArchivePost{Post: *post, Comments: comments}, nil
+}
+
+func (u *usecase) GetActivePost(ctx context.Context, id uint64) (*domain.ActivePost, error) {
+	post, comments, err := u.getPostAndComment(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.ActivePost{Post: *post, Comments: comments}, nil
+}
+
+func (u *usecase) getPostAndComment(ctx context.Context, id uint64) (*domain.Post, []domain.Comment, error) {
+	postX, err := u.db.GetPost(ctx, id)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	post := &domain.Post{ID: id, PostX: *postX}
+
+	comments, err := u.db.GetComments(ctx, id)
+	if err != nil {
+		return nil, nil, err
+	}
+	return post, comments, nil
 }

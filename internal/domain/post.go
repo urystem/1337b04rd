@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -35,16 +37,22 @@ type Form struct {
 type Post struct {
 	ID uint64
 	PostX
-	// DataTime time.Time
 }
+
 type PostX struct {
 	Title    string
 	Content  string
 	HasImage bool
+	DataTime time.Time
 }
 
 // archived post
 type ArchivePost struct {
 	Post     Post
+	Comments []Comment
+}
+
+type ActivePost struct {
+	Post
 	Comments []Comment
 }
