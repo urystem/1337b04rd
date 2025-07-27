@@ -9,18 +9,17 @@ import (
 )
 
 type PostGres interface {
-	Pgx
-	CloseDB()
-	// CreateComment() error
+	Pgx       // for usecase
+	CloseDB() // for bootstrap
 }
 
 type Pgx interface {
-	PgxPost
-	PgxUser
-	PgxComment
+	pgxPost
+	pgxUser
+	pgxComment
 }
 
-type PgxPost interface {
+type pgxPost interface {
 	SelectActivePosts(context.Context) ([]domain.PostNonContent, error)
 	InsertPost(ctx context.Context, post *domain.InsertPost) (uint64, error)
 	DeletePost(ctx context.Context, id uint64) error
@@ -29,11 +28,13 @@ type PgxPost interface {
 	GetPost(ctx context.Context, id uint64) (*domain.PostX, error)
 }
 
-type PgxUser interface {
+type pgxUser interface {
 	InsertUser(context.Context, *domain.Session) error
 	DeleteUser(ctx context.Context, sessionID uuid.UUID) error
 }
 
-type PgxComment interface {
+type pgxComment interface {
 	GetComments(ctx context.Context, postID uint64) ([]domain.Comment, error)
+	InsertComment(ctx context.Context, comment *domain.InsertComment) (uint64, error)
+	DeleteComment(ctx context.Context, commentID uint64) error
 }

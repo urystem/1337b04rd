@@ -27,6 +27,7 @@ func (u *usecase) CreatePost(ctx context.Context, form *domain.Form) error {
 	if err != nil {
 		return err
 	}
+
 	if !insert.HasImage {
 		return nil
 	}

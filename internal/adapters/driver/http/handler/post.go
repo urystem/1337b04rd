@@ -9,7 +9,7 @@ import (
 )
 
 func (h *handler) ActivePost(w http.ResponseWriter, r *http.Request) {
-	postID, err := strconv.ParseUint(r.PathValue("PostID"), 10, 64)
+	postID, err := strconv.ParseUint(r.PathValue("postID"), 10, 64)
 	if err != nil {
 		slog.Error(err.Error())
 
@@ -21,6 +21,7 @@ func (h *handler) ActivePost(w http.ResponseWriter, r *http.Request) {
 		h.renderError(w, errData)
 		return
 	}
+	
 	post, err := h.use.GetActivePost(r.Context(), postID)
 	if err != nil {
 		slog.Error(err.Error())

@@ -40,6 +40,7 @@ type Post struct {
 }
 
 type PostX struct {
+	UserName string
 	Title    string
 	Content  string
 	HasImage bool

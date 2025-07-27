@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"1337b04rd/internal/domain"
 )
@@ -46,4 +47,47 @@ func (db *poolDB) GetComments(ctx context.Context, postID uint64) ([]domain.Comm
 	}
 
 	return comments, nil
+}
+
+func (db *poolDB) InsertComment(ctx context.Context, comment *domain.InsertComment) (uint64, error) {
+	const query = `
+		INSERT INTO comments (
+			post_id,
+			user_id,
+			comment_content,
+			parent_comment_id,
+			has_image
+		)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING comment_id;`
+
+	var commentID uint64
+	err := db.QueryRow(
+		ctx, query,
+		comment.PostID,
+		comment.User,
+		comment.Content,
+		comment.ReplyToID, // может быть nil
+		comment.HasImage,
+	).Scan(&commentID)
+
+	return commentID, err
+}
+
+func (db *poolDB) DeleteComment(ctx context.Context, commentID uint64) error {
+	const query = `
+		DELETE FROM comments
+		WHERE comment_id = $1;
+	`
+
+	cmdTag, err := db.Exec(ctx, query, commentID)
+	if err != nil {
+		return fmt.Errorf("DeleteComment: %w", err)
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("DeleteComment: no comment with id %d found", commentID)
+	}
+
+	return nil
 }

@@ -7,17 +7,17 @@ import (
 )
 
 type MinioInter interface {
-	MinIoInterPost
-	MinIoInterComment
+	minIoInterPost
+	minIoInterComment
 }
 
-type MinIoInterPost interface {
+type minIoInterPost interface {
 	PutPost(ctx context.Context, obj *domain.InPutObject) error
 	DelPost(ctx context.Context, objName string) error
 	GetPost(ctx context.Context, objName string) (*domain.OutputObject, error)
 }
 
-type MinIoInterComment interface {
+type minIoInterComment interface {
 	PutComment(ctx context.Context, obj *domain.InPutObject) error
 	DelComment(ctx context.Context, objName string) error
 	GetComment(ctx context.Context, objName string) (*domain.OutputObject, error)

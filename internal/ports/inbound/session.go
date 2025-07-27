@@ -10,8 +10,8 @@ import (
 
 // for redis and middleware
 type SessionInter interface {
-	SessionMiddlewareInter
-	SessionSeviceInter
+	SessionMiddlewareInter // for middleware
+	SessionSeviceInter     // for service
 }
 
 type SessionMiddlewareInter interface {

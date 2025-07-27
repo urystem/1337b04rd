@@ -5,8 +5,6 @@ import (
 	"errors"
 
 	"1337b04rd/internal/domain"
-
-	"github.com/google/uuid"
 )
 
 func (u *usecase) AddUserToDB(ctx context.Context, ses *domain.Session) error {
@@ -19,9 +17,4 @@ func (u *usecase) AddUserToDB(ctx context.Context, ses *domain.Session) error {
 		return errors.Join(err, u.db.DeleteUser(ctx, ses.Uuid))
 	}
 	return nil
-}
-
-// kerek emes au
-func (u *usecase) DeleteUserOnDB(ctx context.Context, id uuid.UUID) error {
-	return u.db.DeleteUser(ctx, id)
 }

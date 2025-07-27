@@ -7,27 +7,39 @@ import (
 )
 
 type UseCase interface {
-	Service
-	CommentUsecase
-	Ticker
+	Service // for handler
+	Ticker  // for bootstrap
 }
 
 type Service interface {
-	ListOfActivePosts(context.Context) ([]domain.PostNonContent, error)
+	postUse
+	commentUsecase
+	userUseCase
+}
+
+type postUse interface {
 	GetPostImage(ctx context.Context, objName string) (*domain.OutputObject, error)
 	CreatePost(ctx context.Context, form *domain.Form) error
-	ListOfArchivePosts(context.Context) ([]domain.PostNonContent, error)
-	UserUseCase
-	GetArchivePost(context.Context, uint64) (*domain.ArchivePost, error)
-	GetCommentImage(ctx context.Context, objName string) (*domain.OutputObject, error)
+	activePostUse
+	archivePostUse
+}
+
+type activePostUse interface {
+	ListOfActivePosts(context.Context) ([]domain.PostNonContent, error)
 	GetActivePost(context.Context, uint64) (*domain.ActivePost, error)
 }
 
-type CommentUsecase interface {
-	// ListOfPosts(context.Context) ([]domain.Post, error)
+type archivePostUse interface {
+	ListOfArchivePosts(context.Context) ([]domain.PostNonContent, error)
+	GetArchivePost(context.Context, uint64) (*domain.ArchivePost, error)
 }
 
-type UserUseCase interface {
+type commentUsecase interface {
+	CreateComment(ctx context.Context, form *domain.CommentForm) error
+	GetCommentImage(ctx context.Context, objName string) (*domain.OutputObject, error)
+}
+
+type userUseCase interface {
 	AddUserToDB(ctx context.Context, ses *domain.Session) error
 }
 
