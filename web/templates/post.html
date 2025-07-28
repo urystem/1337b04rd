@@ -57,9 +57,9 @@
     <!-- Main Post -->
     <div class="post">
         <div class="header">
-            <b>{{.UserName}}</b>
-            {{.DataTime}}
-            {{.ID}}
+            <b>{{.Post.UserName}}</b>
+            {{.Post.DataTime}}
+            {{.Post.ID}}
         </div>
         <div class="content">
             {{if .Post.HasImage}}
@@ -68,35 +68,56 @@
                 <p>No Image</p>
             {{end}}
             <div class="text">
-                <h3>{{.Title}}</h3>
-                {{.Content}}
+                <h3>{{.Post.Title}}</h3>
+                {{.Post.Content}}
             </div>
         </div>
 
     </div>
+    {{ $comment := printf "/add-comment/%d" .Post.ID }}
     <!-- Comments Section -->
     <div class="comments">
         <h2>Comments</h2>
-    <ul class="comment-list">
-        {{range .Comments}}
-        <li class="comment">
-            <div class="header">
-                <img src="{{.AvatarURL}}" alt="no pic" width="50px" height="50px">
-                <b>{{.UserName}}</b>
-                {{.DataTime}}
-                {{.ID}}
-            </div>
-            <div class="content">
-                {{if .HasImage}}
-                    <img src="/comment/{{.ID}}" alt="image not found">
-                {{end}}
-                <div class="text">
-                    {{.Content}}
+        {{define "comment"}}
+            <li class="comment">
+                <div class="header">
+                    <img src="{{.AvatarURL}}" alt="avatar" width="50" height="50">
+                    <b>{{.UserName}}</b> {{.DataTime}}
                 </div>
-            </div>
-        </li>
+                <div class="content">
+                    {{if .HasImage}}
+                        <img src="/comment/{{.CommentID}}" alt="image">
+                    {{end}}
+                    <div class="text">{{.Content}}</div>
+                </div>
+
+                <!-- Reply form -->
+                <!-- $.ID — это ID поста (из глобального контекста).
+                .ID — это ID текущего комментария (внутри range .Replies). -->  
+                <form action="$comment?reply={{.CommentID}}" method="POST" enctype="multipart/form-data">
+                    <textarea name="comment" placeholder="Reply..."></textarea>
+                    <input type="file" name="file">
+                    <input type="submit" value="Reply">
+                </form>
+
+                <!-- Replies -->
+                {{if .Replies}}
+                <ul class="comment-replies">
+                    {{range .Replies}}
+                        {{template "comment" .}}
+                    {{end}}
+                </ul>
+                {{end}}
+            </li>
         {{end}}
-    </ul>
+
+        <ul class="comment-list">
+            {{range .CommentTries}} <!-- .Comments должен быть []Comment1 -->
+                {{template "comment" .}}
+            {{end}}
+        </ul>
+        
+        
         <!-- Comment Example -->
 
     </div>
@@ -104,7 +125,7 @@
     <!-- Add a Comment Section -->
     <div class="add-comment">
         <h3>Add a Comment</h3>
-        <form action="/add-comment/{{.ID}}" method="POST" enctype="multipart/form-data">
+        <form action="{{$comment}}" method="POST" enctype="multipart/form-data">
             <textarea name="comment" placeholder="Write your comment here..."></textarea>
             <tr>
                 <td>File</td>

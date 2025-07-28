@@ -33,6 +33,21 @@ func (h *handler) AddComment(w http.ResponseWriter, r *http.Request) {
 	form.User = sess.Uuid
 	form.Content = r.FormValue("comment")
 
+	replyStr := r.URL.Query().Get("reply")
+	if replyStr != "" {
+		reply, err := strconv.ParseUint(replyStr, 10, 64)
+		if err != nil {
+			slog.Error(err.Error())
+			errData := &domain.ErrorPageData{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			}
+			h.renderError(w, errData)
+			return
+		}
+		form.ReplyToID = &reply
+	}
+
 	file, header, err := r.FormFile("file")
 	if err == nil {
 		defer file.Close()
@@ -58,6 +73,7 @@ func (h *handler) AddComment(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	
 	err = h.use.CreateComment(ctx, form)
 	if err != nil {
 		slog.Error(err.Error())
@@ -68,5 +84,6 @@ func (h *handler) AddComment(w http.ResponseWriter, r *http.Request) {
 		h.renderError(w, errData)
 		return
 	}
-	h.Catalog(w, r)
+	// http.Redirect(w, r, r.URL.Path, http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }

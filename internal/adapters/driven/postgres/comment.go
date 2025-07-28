@@ -11,10 +11,12 @@ func (db *poolDB) GetComments(ctx context.Context, postID uint64) ([]domain.Comm
 	const query = `
 		SELECT 
 			c.comment_id,
+			u.name,
 			u.avatar_url,
 			c.parent_comment_id,
 			c.comment_content,
-			c.has_image
+			c.has_image,
+			c.comment_time
 		FROM comments c
 		JOIN users u ON c.user_id = u.session_id
 		WHERE c.post_id = $1
@@ -30,11 +32,13 @@ func (db *poolDB) GetComments(ctx context.Context, postID uint64) ([]domain.Comm
 	for rows.Next() {
 		var c domain.Comment
 		err := rows.Scan(
-			&c.ID,
+			&c.CommentID,
+			&c.UserName,
 			&c.AvatarURL,
 			&c.ReplyToID,
 			&c.Content,
 			&c.HasImage,
+			&c.DataTime,
 		)
 		if err != nil {
 			return nil, err
@@ -62,6 +66,7 @@ func (db *poolDB) InsertComment(ctx context.Context, comment *domain.InsertComme
 		RETURNING comment_id;`
 
 	var commentID uint64
+	fmt.Println(comment.ReplyToID)
 	err := db.QueryRow(
 		ctx, query,
 		comment.PostID,
@@ -70,7 +75,6 @@ func (db *poolDB) InsertComment(ctx context.Context, comment *domain.InsertComme
 		comment.ReplyToID, // может быть nil
 		comment.HasImage,
 	).Scan(&commentID)
-
 	return commentID, err
 }
 

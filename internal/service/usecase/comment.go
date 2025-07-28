@@ -20,7 +20,7 @@ func (u *usecase) CreateComment(ctx context.Context, form *domain.CommentForm) e
 	insert.PostID = form.PostID
 	insert.User = form.User
 	insert.Content = form.Content
-
+	insert.ReplyToID = form.ReplyToID
 	commentID, err := u.db.InsertComment(ctx, insert)
 	if err != nil {
 		return err

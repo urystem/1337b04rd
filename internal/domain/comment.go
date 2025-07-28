@@ -6,19 +6,29 @@ import (
 	"github.com/google/uuid"
 )
 
-// output
-type Comment struct {
-	ID        uint64
+type basicOutputComment struct {
+	CommentID uint64
 	UserName  string
 	AvatarURL string
-	ReplyToID *uint64 // nil если нет ответа на другой комментарий
 	Content   string
 	HasImage  bool
 	DataTime  time.Time
 }
 
+// output for archive-post like insta
+type Comment struct {
+	basicOutputComment
+	ReplyToID *uint64 // nil если нет ответа на другой комментарий
+}
+
+// for post like tree
+type CommentTree struct {
+	basicOutputComment
+	Replies []CommentTree // вложенные ответы
+}
+
 // input
-type BasicInputComment struct {
+type basicInputComment struct {
 	PostID    uint64
 	User      uuid.UUID
 	Content   string
@@ -27,12 +37,12 @@ type BasicInputComment struct {
 
 // input
 type CommentForm struct {
-	BasicInputComment              // for sql
+	basicInputComment              // for sql
 	File              *InPutObject // for s3
 }
 
 // sql
 type InsertComment struct {
-	BasicInputComment
+	basicInputComment
 	HasImage bool
 }

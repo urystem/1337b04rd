@@ -40,13 +40,13 @@
                 <div class="comment">
                     <img class="avatar" src="{{.AvatarURL}}" alt="User Avatar">
                     <div class="comment-content">
-                        <p><strong>Comment ID:</strong> {{.ID}}</p>
+                        <p><strong>Comment ID:</strong> {{.CommentID}}</p>
                         {{if .ReplyToID}}
                         <p><em>Reply to ID: {{.ReplyToID}}</em></p>
                         {{end}}
                         <p>{{.Content}}</p>
                         {{if .HasImage}}
-                            <img src="/comment/{{.ID}}" alt="image not found">
+                            <img src="/comment/{{.CommentID}}" alt="image not found">
                         {{end}}
                     </div>
                 </div>

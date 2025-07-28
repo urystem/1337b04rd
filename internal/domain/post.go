@@ -14,7 +14,7 @@ type PostNonContent struct {
 }
 
 // create-post(like template) basic
-type BasicInputPost struct {
+type basicInputPost struct {
 	Uuid    uuid.UUID
 	Name    string
 	Subject string
@@ -23,13 +23,13 @@ type BasicInputPost struct {
 
 // create-post db
 type InsertPost struct {
-	BasicInputPost
+	basicInputPost
 	HasImage bool
 }
 
 // create-post (general)
 type Form struct {
-	BasicInputPost
+	basicInputPost
 	File *InPutObject
 }
 
@@ -54,6 +54,6 @@ type ArchivePost struct {
 }
 
 type ActivePost struct {
-	Post
-	Comments []Comment
+	Post         Post
+	CommentTries []CommentTree
 }

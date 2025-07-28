@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	"1337b04rd/internal/domain"
@@ -59,7 +60,39 @@ func (u *usecase) GetActivePost(ctx context.Context, id uint64) (*domain.ActiveP
 		return nil, err
 	}
 
-	return &domain.ActivePost{Post: *post, Comments: comments}, nil
+	// Шаг 1: Создаем плоский map с Comment.ID -> CommentTree
+	commentMap := make(map[uint64]*domain.CommentTree)
+	for _, c := range comments {
+		treeComment := &domain.CommentTree{}
+		treeComment.CommentID = c.CommentID
+		treeComment.UserName = c.UserName
+		treeComment.AvatarURL = c.AvatarURL
+		treeComment.Content = c.Content
+		treeComment.HasImage = c.HasImage
+		treeComment.DataTime = c.DataTime
+
+		// save to map
+		commentMap[c.CommentID] = treeComment
+	}
+
+	// Шаг 2: Собираем дерево
+	var roots []domain.CommentTree
+	for _, c := range comments {
+		node := commentMap[c.CommentID]
+
+		if c.ReplyToID != nil {
+			parentNode, ok := commentMap[*c.ReplyToID]
+			if ok {
+				parentNode.Replies = append(parentNode.Replies, *node)
+			} else {
+				return nil, fmt.Errorf("impossible error")
+			}
+		} else {
+			roots = append(roots, *node)
+		}
+	}
+
+	return &domain.ActivePost{Post: *post, CommentTries: roots}, nil
 }
 
 func (u *usecase) getPostAndComment(ctx context.Context, id uint64) (*domain.Post, []domain.Comment, error) {
