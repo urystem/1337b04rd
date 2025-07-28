@@ -62,9 +62,6 @@
             {{.ID}}
         </div>
         <div class="content">
-            <!-- <a href="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png">
-                <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_light_color_272x92dp.png" alt="no pic">
-            </a> -->
             {{if .Post.HasImage}}
                 <img src="/postimage/{{.ID}}" alt="Post Image">
             {{else}}
@@ -84,7 +81,7 @@
         {{range .Comments}}
         <li class="comment">
             <div class="header">
-                <img src="{{.AvaterLink}}" alt="no pic" width="50px" height="50px">
+                <img src="{{.AvatarURL}}" alt="no pic" width="50px" height="50px">
                 <b>{{.UserName}}</b>
                 {{.DataTime}}
                 {{.ID}}

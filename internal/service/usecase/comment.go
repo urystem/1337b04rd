@@ -20,13 +20,14 @@ func (u *usecase) CreateComment(ctx context.Context, form *domain.CommentForm) e
 	insert.PostID = form.PostID
 	insert.User = form.User
 	insert.Content = form.Content
-	
-	commentID, err := u.db.InsertComment(ctx, insert)
 
+	commentID, err := u.db.InsertComment(ctx, insert)
 	if err != nil {
 		return err
 	}
-
+	if !insert.HasImage {
+		return nil
+	}
 	form.File.ObjName = strconv.FormatUint(commentID, 10)
 	err = u.s3.PutComment(ctx, form.File)
 	if err != nil {
