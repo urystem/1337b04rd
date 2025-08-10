@@ -59,40 +59,48 @@ func (u *usecase) GetActivePost(ctx context.Context, id uint64) (*domain.ActiveP
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(comments)
-	// Шаг 1: Создаем плоский map с Comment.ID -> CommentTree
-	commentMap := make(map[uint64]*domain.CommentTree)
-	for _, c := range comments {
-		treeComment := &domain.CommentTree{}
-		treeComment.CommentID = c.CommentID
-		treeComment.UserName = c.UserName
-		treeComment.AvatarURL = c.AvatarURL
-		treeComment.Content = c.Content
-		treeComment.HasImage = c.HasImage
-		treeComment.DataTime = c.DataTime
 
-		// save to map
-		commentMap[c.CommentID] = treeComment
+	// 1) Создаём map: comment_id -> *CommentTree
+	commentMap := make(map[uint64]*domain.CommentTree, len(comments))
+	for _, c := range comments {
+		node := &domain.CommentTree{}
+		// заполняем поля embedded basicOutputComment напрямую
+		node.CommentID = c.CommentID
+		node.UserName = c.UserName
+		node.AvatarURL = c.AvatarURL
+		node.Content = c.Content
+		node.HasImage = c.HasImage
+		node.DataTime = c.DataTime
+
+		commentMap[c.CommentID] = node
 	}
 
-	// Шаг 2: Собираем дерево
-	var roots []domain.CommentTree
+	// 2) Строим дерево, работаем с указателями
+	var roots []*domain.CommentTree
 	for _, c := range comments {
 		node := commentMap[c.CommentID]
+		if node == nil {
+			// должно быть не так, т.к. мы заранее заполнили map, но на всякий случай
+			return nil, fmt.Errorf("internal error: node %d not found in map", c.CommentID)
+		}
 
 		if c.ReplyToID != nil {
 			parentNode, ok := commentMap[*c.ReplyToID]
 			if ok {
-				parentNode.Replies = append(parentNode.Replies, *node)
+				parentNode.Replies = append(parentNode.Replies, node)
 			} else {
-				return nil, fmt.Errorf("impossible error")
+				// либо возвращать ошибку, либо пропускать
+				return nil, fmt.Errorf("parent comment %d not found for comment %d", *c.ReplyToID, c.CommentID)
 			}
 		} else {
-			roots = append(roots, *node)
+			roots = append(roots, node)
 		}
 	}
 
-	return &domain.ActivePost{Post: *post, CommentTries: roots}, nil
+	return &domain.ActivePost{
+		Post:         *post,
+		CommentTries: roots,
+	}, nil
 }
 
 func (u *usecase) getPostAndComment(ctx context.Context, id uint64) (*domain.Post, []domain.Comment, error) {

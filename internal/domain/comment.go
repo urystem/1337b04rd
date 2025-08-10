@@ -24,7 +24,7 @@ type Comment struct {
 // for post like tree
 type CommentTree struct {
 	basicOutputComment
-	Replies []CommentTree // вложенные ответы
+	Replies []*CommentTree // вложенные ответы
 }
 
 // input
@@ -49,4 +49,3 @@ type InsertComment struct {
 	basicInputComment
 	HasImage bool
 }
-

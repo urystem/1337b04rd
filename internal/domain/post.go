@@ -55,5 +55,5 @@ type ArchivePost struct {
 
 type ActivePost struct {
 	Post         Post
-	CommentTries []CommentTree
+	CommentTries []*CommentTree
 }
