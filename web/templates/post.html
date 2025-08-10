@@ -63,7 +63,7 @@
         </div>
         <div class="content">
             {{if .Post.HasImage}}
-                <img src="/postimage/{{.ID}}" alt="Post Image">
+                <img src="/postimage/{{.Post.ID}}" alt="Post Image">
             {{else}}
                 <p>No Image</p>
             {{end}}
