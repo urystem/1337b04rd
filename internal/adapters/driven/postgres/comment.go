@@ -59,20 +59,17 @@ func (db *poolDB) InsertComment(ctx context.Context, comment *domain.InsertComme
 			post_id,
 			user_id,
 			comment_content,
-			parent_comment_id,
 			has_image
 		)
-		VALUES ($1, $2, $3, $4, $5)
+		VALUES ($1, $2, $3, $4)
 		RETURNING comment_id;`
 
 	var commentID uint64
-	fmt.Println(comment.ReplyToID)
 	err := db.QueryRow(
 		ctx, query,
 		comment.PostID,
 		comment.User,
 		comment.Content,
-		comment.ReplyToID, // может быть nil
 		comment.HasImage,
 	).Scan(&commentID)
 	return commentID, err

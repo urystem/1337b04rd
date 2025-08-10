@@ -37,6 +37,7 @@ type archivePostUse interface {
 type commentUsecase interface {
 	CreateComment(ctx context.Context, form *domain.CommentForm) error
 	GetCommentImage(ctx context.Context, objName string) (*domain.OutputObject, error)
+	Reply(context.Context, *domain.ReplyForm) error
 }
 
 type userUseCase interface {

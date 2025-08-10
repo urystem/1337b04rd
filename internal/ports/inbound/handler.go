@@ -14,6 +14,7 @@ type HandlerInter interface {
 	ServeCommentImage(w http.ResponseWriter, r *http.Request)
 	ActivePost(w http.ResponseWriter, r *http.Request)
 	AddComment(w http.ResponseWriter, r *http.Request)
+	Reply(w http.ResponseWriter, r *http.Request)
 	// CreateComment(w http.ResponseWriter, r *http.Request)
 	// ErrorHandler
 }

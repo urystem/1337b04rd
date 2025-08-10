@@ -59,7 +59,7 @@ func (u *usecase) GetActivePost(ctx context.Context, id uint64) (*domain.ActiveP
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(comments)
 	// Шаг 1: Создаем плоский map с Comment.ID -> CommentTree
 	commentMap := make(map[uint64]*domain.CommentTree)
 	for _, c := range comments {

@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"strconv"
 
 	"1337b04rd/internal/domain"
@@ -21,7 +24,7 @@ func (h *handler) ActivePost(w http.ResponseWriter, r *http.Request) {
 		h.renderError(w, errData)
 		return
 	}
-	
+
 	post, err := h.use.GetActivePost(r.Context(), postID)
 	if err != nil {
 		slog.Error(err.Error())
@@ -34,6 +37,7 @@ func (h *handler) ActivePost(w http.ResponseWriter, r *http.Request) {
 		h.renderError(w, errData)
 		return
 	}
+	gg(post)
 
 	err = h.templates.ExecuteTemplate(w, "post.html", post)
 	if err != nil {
@@ -43,5 +47,22 @@ func (h *handler) ActivePost(w http.ResponseWriter, r *http.Request) {
 			Message: err.Error(),
 		}
 		h.renderError(w, errData)
+	}
+}
+
+func gg(c *domain.ActivePost) {
+	file, err := os.Create("comment.json")
+	if err != nil {
+		fmt.Println("Error creating file:", err)
+		return
+	}
+	defer file.Close()
+
+	// Encode struct to JSON and write directly to file
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ") // Optional: pretty-print
+	if err := encoder.Encode(c); err != nil {
+		fmt.Println("Error encoding JSON:", err)
+		return
 	}
 }

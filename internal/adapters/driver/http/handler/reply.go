@@ -8,8 +8,8 @@ import (
 	"1337b04rd/internal/domain"
 )
 
-func (h *handler) AddComment(w http.ResponseWriter, r *http.Request) {
-	postID, err := strconv.ParseUint(r.PathValue("postID"), 10, 64)
+func (h *handler) Reply(w http.ResponseWriter, r *http.Request) {
+	commentID, err := strconv.ParseUint(r.PathValue("commentID"), 10, 64)
 	if err != nil {
 		slog.Error(err.Error())
 
@@ -28,11 +28,10 @@ func (h *handler) AddComment(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "error middleware", http.StatusUnauthorized)
 		return
 	}
-	form := &domain.CommentForm{}
-	form.PostID = postID
+	form := &domain.ReplyForm{}
 	form.User = sess.Uuid
+	form.ReplyToID = commentID
 	form.Content = r.FormValue("comment")
-
 	file, header, err := r.FormFile("file")
 	if err == nil {
 		defer file.Close()
@@ -58,7 +57,7 @@ func (h *handler) AddComment(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	err = h.use.CreateComment(ctx, form)
+	err = h.use.Reply(ctx, form)
 	if err != nil {
 		slog.Error(err.Error())
 		errData := &domain.ErrorPageData{
@@ -68,6 +67,5 @@ func (h *handler) AddComment(w http.ResponseWriter, r *http.Request) {
 		h.renderError(w, errData)
 		return
 	}
-	// http.Redirect(w, r, r.URL.Path, http.StatusSeeOther)
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }

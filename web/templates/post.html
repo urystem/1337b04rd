@@ -74,7 +74,7 @@
         </div>
 
     </div>
-    {{ $comment := printf "/add-comment/%d" .Post.ID }}
+    {{ $comment1 := printf "/add-comment/%d" .Post.ID }}
     <!-- Comments Section -->
     <div class="comments">
         <h2>Comments</h2>
@@ -94,7 +94,7 @@
                 <!-- Reply form -->
                 <!-- $.ID — это ID поста (из глобального контекста).
                 .ID — это ID текущего комментария (внутри range .Replies). -->  
-                <form action="$comment?reply={{.CommentID}}" method="POST" enctype="multipart/form-data">
+                <form action="/reply/{{ .CommentID }}" method="POST" enctype="multipart/form-data">
                     <textarea name="comment" placeholder="Reply..."></textarea>
                     <input type="file" name="file">
                     <input type="submit" value="Reply">
@@ -125,7 +125,7 @@
     <!-- Add a Comment Section -->
     <div class="add-comment">
         <h3>Add a Comment</h3>
-        <form action="{{$comment}}" method="POST" enctype="multipart/form-data">
+        <form action="/add-comment/{{ .Post.ID }}" method="POST" enctype="multipart/form-data">
             <textarea name="comment" placeholder="Write your comment here..."></textarea>
             <tr>
                 <td>File</td>

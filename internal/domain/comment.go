@@ -28,11 +28,14 @@ type CommentTree struct {
 }
 
 // input
+type basicInputCommentReply struct {
+	User    uuid.UUID
+	Content string
+}
+
 type basicInputComment struct {
-	PostID    uint64
-	User      uuid.UUID
-	Content   string
-	ReplyToID *uint64 // nil если нет ответа на другой комментарий
+	basicInputCommentReply
+	PostID uint64
 }
 
 // input
@@ -46,3 +49,4 @@ type InsertComment struct {
 	basicInputComment
 	HasImage bool
 }
+

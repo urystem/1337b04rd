@@ -37,4 +37,5 @@ type pgxComment interface {
 	GetComments(ctx context.Context, postID uint64) ([]domain.Comment, error)
 	InsertComment(ctx context.Context, comment *domain.InsertComment) (uint64, error)
 	DeleteComment(ctx context.Context, commentID uint64) error
+	InsertReply(ctx context.Context, reply *domain.InsertReply) (uint64, error)
 }

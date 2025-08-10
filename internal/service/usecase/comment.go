@@ -2,8 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
-	"strconv"
 
 	"1337b04rd/internal/domain"
 )
@@ -20,18 +18,9 @@ func (u *usecase) CreateComment(ctx context.Context, form *domain.CommentForm) e
 	insert.PostID = form.PostID
 	insert.User = form.User
 	insert.Content = form.Content
-	insert.ReplyToID = form.ReplyToID
 	commentID, err := u.db.InsertComment(ctx, insert)
 	if err != nil {
 		return err
 	}
-	if !insert.HasImage {
-		return nil
-	}
-	form.File.ObjName = strconv.FormatUint(commentID, 10)
-	err = u.s3.PutComment(ctx, form.File)
-	if err != nil {
-		return errors.Join(err, u.db.DeleteComment(ctx, commentID))
-	}
-	return nil
+	return u.imageSaver(ctx, form.File, commentID)
 }
