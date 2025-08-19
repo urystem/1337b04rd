@@ -1,8 +1,6 @@
 package inbound
 
-import (
-	"net/http"
-)
+import "net/http"
 
 type HandlerInter interface {
 	Catalog(w http.ResponseWriter, r *http.Request)

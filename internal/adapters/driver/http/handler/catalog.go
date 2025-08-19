@@ -52,4 +52,5 @@ func (h *handler) ServePostImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", obj.ConType)
 
 	http.ServeContent(w, r, "", obj.Modified, obj)
+	obj.Close()
 }

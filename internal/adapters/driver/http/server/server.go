@@ -36,6 +36,6 @@ func (srv *server) RegisterOnShutDown(f func()) {
 	srv.RegisterOnShutdown(f)
 }
 
-func (srv *server) CloseServer() error {
-	return srv.Close()
-}
+// func (srv *server) CloseServer() error {
+// 	return srv.Close()
+// }

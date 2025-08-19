@@ -9,40 +9,6 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// func (db *poolDB) Reply(ctx context.Context, reply *domain.InsertReply) (uint64, error) {
-// 	const query = `
-// 		INSERT INTO comments (
-// 			post_id,
-// 			parent_comment_id,
-// 			user_id,
-// 			comment_content,
-// 			has_image
-// 		)
-// 		VALUES (
-// 			(SELECT post_id FROM comments WHERE comment_id = $1), -- подзапрос
-// 			$1,
-// 			$2,
-// 			$3,
-// 			$4
-// 		)
-// 		RETURNING comment_id;
-// 	`
-
-// 	var commentID uint64
-// 	err := db.QueryRow(
-// 		ctx, query,
-// 		reply.ReplyToID,
-// 		reply.User,
-// 		reply.Content,
-// 		reply.HasImage,
-// 	).Scan(&commentID)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-
-// 	return commentID, nil
-// }
-
 func (db *poolDB) InsertReply(ctx context.Context, reply *domain.InsertReply) (uint64, error) {
 	const query = `
 		WITH parent AS (

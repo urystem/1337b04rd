@@ -45,7 +45,4 @@ func (app *myApp) initSession(ctx context.Context, sessionCfg inbound.SessionCon
 
 	// init rick service (second layer)
 	return session.InitSession(sessionRedis, rickService), nil
-	// fmt.Println(sessionService.NewSession(ctx))
-	// sessionMiddleware := middleware.InitSession(sessionCfg, sessionService)
-	// return sessionMiddleware, nil
 }

@@ -41,7 +41,7 @@ func InitApp(ctx context.Context, cfg inbound.Config) (inbound.AppInter, error) 
 	// init service(usecase)
 	dbCfg := cfg.GetDBConfig()
 	minIoCfg := cfg.GetMinIoConfig()
-	useCase, err := app.InitService(ctx, dbCfg, minIoCfg, session)
+	useCase, err := app.initService(ctx, dbCfg, minIoCfg, session)
 	if err != nil {
 		return nil, errors.Join(err, app.Shutdown(ctx))
 	}

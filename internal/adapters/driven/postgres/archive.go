@@ -1,8 +1,6 @@
 package postgres
 
-import (
-	"context"
-)
+import "context"
 
 func (db *poolDB) Archiver(ctx context.Context) error {
 	const sql = `

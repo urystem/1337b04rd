@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 
 	"1337b04rd/internal/domain"
 
@@ -19,16 +20,16 @@ func (db *poolDB) InsertUser(ctx context.Context, ses *domain.Session) error {
 }
 
 func (db *poolDB) DeleteUser(ctx context.Context, sessionID uuid.UUID) error {
-	// const query = `DELETE FROM users WHERE session_id = $1;`
+	const query = `DELETE FROM users WHERE session_id = $1;`
 
-	// ct, err := db.Pool.Exec(ctx, query, sessionID)
-	// if err != nil {
-	// 	return fmt.Errorf("delete user: %w", err)
-	// }
+	ct, err := db.Pool.Exec(ctx, query, sessionID)
+	if err != nil {
+		return fmt.Errorf("delete user: %w", err)
+	}
 
-	// if ct.RowsAffected() == 0 {
-	// 	return fmt.Errorf("delete user: no user with session_id %s", sessionID)
-	// }
+	if ct.RowsAffected() == 0 {
+		return fmt.Errorf("delete user: no user with session_id %s", sessionID)
+	}
 
 	return nil
 }

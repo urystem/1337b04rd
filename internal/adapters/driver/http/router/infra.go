@@ -24,7 +24,6 @@ func NewRoute(middle inbound.MiddleWareInter, hand inbound.HandlerInter) http.Ha
 	mux.HandleFunc("GET /post/{postID}", hand.ActivePost)
 	mux.HandleFunc("POST /add-comment/{postID}", hand.AddComment)
 	mux.HandleFunc("POST /reply/{commentID}", hand.Reply)
-	// mux.Handle("GET /", r.MiddleWareInter.CheckOrSetSession(http.HandlerFunc(r.Catalog)))
 
 	return middle.CheckOrSetSession(mux)
 	// return mux

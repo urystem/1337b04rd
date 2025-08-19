@@ -25,13 +25,13 @@ func (app *myApp) initTicker() {
 			case <-signal:
 				return
 			case <-ticker.C:
-				app.todo()
+				app.tickerToDo()
 			}
 		}
 	}()
 }
 
-func (app *myApp) todo() {
+func (app *myApp) tickerToDo() {
 	ctx, cancel := context.WithTimeout(context.TODO(), 5*time.Second)
 	defer cancel()
 	err := app.ticker.Archiver(ctx)

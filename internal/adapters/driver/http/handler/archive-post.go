@@ -66,4 +66,5 @@ func (h *handler) ServeCommentImage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", obj.ConType)
 
 	http.ServeContent(w, r, "", obj.Modified, obj)
+	obj.Close()
 }
