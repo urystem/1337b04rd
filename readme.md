@@ -13,10 +13,6 @@ cd 1337b04rd
 
 # Run docker then use next command
 docker-compose up --build
-
-# Wait till all containers are up
-# Run migrations (create tables in PostgreSQL)
-go run ./cmd/migrations/migrate.go
 ```
 **After app container is up go to the localhost:8081/catalog**
 
